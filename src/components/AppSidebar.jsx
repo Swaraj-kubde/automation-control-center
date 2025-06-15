@@ -1,5 +1,5 @@
 
-import { BarChart3, Users, UserCheck, Receipt, Home } from "lucide-react";
+import { BarChart3, Users, UserCheck, Receipt, Home, Target } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +22,11 @@ const menuItems = [
     title: "Leads",
     icon: Users,
     key: "leads",
+  },
+  {
+    title: "Lead Qualification",
+    icon: Target,
+    key: "qualification",
   },
   {
     title: "Onboarding",

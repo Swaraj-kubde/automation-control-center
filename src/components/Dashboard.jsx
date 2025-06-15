@@ -6,6 +6,7 @@ import { SummaryCards } from "@/components/SummaryCards";
 import { LeadsOverview } from "@/components/LeadsOverview";
 import { OnboardingTracker } from "@/components/OnboardingTracker";
 import { InvoiceTracker } from "@/components/InvoiceTracker";
+import { LeadQualificationPipeline } from "@/components/LeadQualificationPipeline";
 import { useState } from "react";
 
 const Dashboard = () => {
@@ -15,6 +16,8 @@ const Dashboard = () => {
     switch (activeView) {
       case "leads":
         return <LeadsOverview />;
+      case "qualification":
+        return <LeadQualificationPipeline />;
       case "onboarding":
         return <OnboardingTracker />;
       case "invoices":
