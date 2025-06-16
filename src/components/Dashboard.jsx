@@ -1,4 +1,3 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -7,6 +6,7 @@ import { LeadsOverview } from "@/components/LeadsOverview";
 import { OnboardingTracker } from "@/components/OnboardingTracker";
 import { InvoiceTracker } from "@/components/InvoiceTracker";
 import { LeadQualificationPipeline } from "@/components/LeadQualificationPipeline";
+import { ClientOnboardingData } from "@/components/ClientOnboardingData";
 import { useState } from "react";
 
 const Dashboard = () => {
@@ -19,7 +19,12 @@ const Dashboard = () => {
       case "qualification":
         return <LeadQualificationPipeline />;
       case "onboarding":
-        return <OnboardingTracker />;
+        return (
+          <div className="space-y-6">
+            <OnboardingTracker />
+            <ClientOnboardingData />
+          </div>
+        );
       case "invoices":
         return <InvoiceTracker />;
       default:
