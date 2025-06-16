@@ -1,3 +1,4 @@
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -7,6 +8,7 @@ import { OnboardingTracker } from "@/components/OnboardingTracker";
 import { InvoiceTracker } from "@/components/InvoiceTracker";
 import { LeadQualificationPipeline } from "@/components/LeadQualificationPipeline";
 import { ClientOnboardingData } from "@/components/ClientOnboardingData";
+import { InvoiceManagement } from "@/components/InvoiceManagement";
 import { useState } from "react";
 
 const Dashboard = () => {
@@ -26,7 +28,7 @@ const Dashboard = () => {
           </div>
         );
       case "invoices":
-        return <InvoiceTracker />;
+        return <InvoiceManagement />;
       default:
         return (
           <div className="space-y-6">
