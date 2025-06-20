@@ -4,80 +4,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
-// API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
-
-// Fetch leads from API
-const fetchLeads = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/leads`);
-    if (!response.ok) throw new Error('Failed to fetch leads');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching leads:', error);
-    // Fallback data for development
-    return [
-      {
-        id: 1,
-        name: "John Smith",
-        email: "john@example.com",
-        phone: "(555) 123-4567",
-        source: "Website",
-        status: "Hot",
-        created_at: "2024-06-14",
-        contacted: false,
-      },
-      {
-        id: 2,
-        name: "Sarah Johnson",
-        email: "sarah@example.com",
-        phone: "(555) 987-6543",
-        source: "Referral",
-        status: "Warm",
-        created_at: "2024-06-13",
-        contacted: true,
-      },
-      {
-        id: 3,
-        name: "Mike Davis",
-        email: "mike@example.com",
-        phone: "(555) 456-7890",
-        source: "Social Media",
-        status: "Cold",
-        created_at: "2024-06-12",
-        contacted: false,
-      },
-    ];
-  }
-};
-
-// Update lead contact status
-const updateLeadContact = async (leadId) => {
-  const response = await fetch(`${API_BASE_URL}/leads/${leadId}/contact`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-  });
-  if (!response.ok) throw new Error('Failed to update lead');
-  return response.json();
-};
+import { useClientsData } from "@/hooks/useClientsData";
+import { supabase } from "@/integrations/supabase/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function LeadsOverview() {
   const [statusFilter, setStatusFilter] = useState("all");
   const queryClient = useQueryClient();
 
-  const { data: leads = [], isLoading } = useQuery({
-    queryKey: ['leads'],
-    queryFn: fetchLeads,
-  });
+  const { data: clients = [], isLoading } = useClientsData();
 
   const mutation = useMutation({
-    mutationFn: updateLeadContact,
+    mutationFn: async (clientId) => {
+      const { error } = await supabase
+        .from('clients')
+        .update({ status: 'contacted' })
+        .eq('client_id', clientId);
+      
+      if (error) throw error;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
     },
   });
+
+  // Transform clients data to leads format
+  const leads = clients.map(client => ({
+    id: client.client_id,
+    name: client.client_name,
+    email: client.email_address || 'No email provided',
+    phone: client.contacts?.phone || 'No phone provided',
+    source: client.contacts?.source || 'Unknown',
+    status: client.status === 'contacted' ? 'Hot' : 
+            client.status === 'pending' ? 'Warm' : 'Cold',
+    created_at: client.created_at ? new Date(client.created_at).toISOString().split('T')[0] : '',
+    contacted: client.status === 'contacted'
+  }));
 
   const filteredLeads = statusFilter === "all" 
     ? leads 
@@ -164,6 +126,11 @@ export function LeadsOverview() {
             </div>
           ))}
         </div>
+        {filteredLeads.length === 0 && (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            No leads found for the selected filter.
+          </div>
+        )}
       </CardContent>
     </Card>
   );

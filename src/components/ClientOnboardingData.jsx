@@ -3,75 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
 import { Eye, Mail, Phone, Globe } from "lucide-react";
-
-// API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
-
-// Fetch client onboarding data from API
-const fetchClientOnboardingData = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/client-onboarding`);
-    if (!response.ok) throw new Error('Failed to fetch client onboarding data');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching client onboarding data:', error);
-    // Fallback data for development
-    return [
-      {
-        id: 1,
-        full_name: "John Smith",
-        email: "john.smith@techcorp.com",
-        contact_number: "+1-555-0123",
-        business_name: "TechCorp Solutions",
-        key_challenges: "Struggling with lead qualification and follow-up automation. Need better conversion tracking.",
-        lead_handling: "Currently using basic CRM with manual follow-ups. No automation in place.",
-        created_at: "2024-06-10T10:30:00Z",
-        status: "pending"
-      },
-      {
-        id: 2,
-        full_name: "Sarah Johnson",
-        email: "sarah@digitalmarketing.co",
-        contact_number: "+1-555-0456",
-        business_name: "Digital Marketing Co",
-        key_challenges: "High lead volume but low conversion rates. Need AI-powered lead scoring.",
-        lead_handling: "Using multiple spreadsheets and email campaigns. Very manual process.",
-        created_at: "2024-06-12T14:15:00Z",
-        status: "reviewed"
-      },
-      {
-        id: 3,
-        full_name: "Mike Rodriguez",
-        email: "mike.r@consulting.biz",
-        contact_number: "+1-555-0789",
-        business_name: "Rodriguez Consulting",
-        key_challenges: "Inconsistent lead quality and difficulty in tracking ROI from different channels.",
-        lead_handling: "Email-based system with some CRM integration. Looking for better automation.",
-        created_at: "2024-06-14T09:45:00Z",
-        status: "contacted"
-      }
-    ];
-  }
-};
+import { useClientsData } from "@/hooks/useClientsData";
 
 export function ClientOnboardingData() {
-  const { data: clients = [], isLoading } = useQuery({
-    queryKey: ['client-onboarding'],
-    queryFn: fetchClientOnboardingData,
-  });
+  const { data: clients = [], isLoading } = useClientsData();
 
   const getStatusColor = (status) => {
     switch (status) {
       case "contacted": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "reviewed": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "pending": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+      case "pending": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+      case "completed": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
     }
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -82,7 +30,7 @@ export function ClientOnboardingData() {
   };
 
   const truncateText = (text, maxLength = 50) => {
-    if (text.length <= maxLength) return text;
+    if (!text || text.length <= maxLength) return text || 'N/A';
     return text.substring(0, maxLength) + '...';
   };
 
@@ -130,29 +78,29 @@ export function ClientOnboardingData() {
             </TableHeader>
             <TableBody>
               {clients.map((client) => (
-                <TableRow key={client.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <TableRow key={client.client_id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <TableCell>
                     <div className="font-medium text-gray-900 dark:text-gray-100">
-                      {client.full_name}
+                      {client.client_name}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
                       <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                         <Mail className="w-3 h-3" />
-                        <span className="truncate max-w-[150px]">{client.email}</span>
+                        <span className="truncate max-w-[150px]">{client.email_address || 'No email'}</span>
                       </div>
                       <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                         <Phone className="w-3 h-3" />
-                        <span>{client.contact_number}</span>
+                        <span>{client.contacts?.phone || 'No phone'}</span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1 text-sm">
                       <Globe className="w-3 h-3 text-gray-400" />
-                      <span className="font-medium truncate max-w-[150px]" title={client.business_name}>
-                        {client.business_name}
+                      <span className="font-medium truncate max-w-[150px]" title={client.business}>
+                        {client.business || 'No business info'}
                       </span>
                     </div>
                   </TableCell>
@@ -162,8 +110,8 @@ export function ClientOnboardingData() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm text-gray-600 dark:text-gray-400" title={client.lead_handling}>
-                      {truncateText(client.lead_handling, 50)}
+                    <div className="text-sm text-gray-600 dark:text-gray-400" title={JSON.stringify(client.lead_handlings)}>
+                      {truncateText(client.lead_handlings?.description || 'No lead handling info', 50)}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -173,7 +121,7 @@ export function ClientOnboardingData() {
                   </TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(client.status)}>
-                      {client.status}
+                      {client.status || 'pending'}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -181,14 +129,15 @@ export function ClientOnboardingData() {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => window.open(`mailto:${client.email}`, '_blank')}
+                        onClick={() => window.open(`mailto:${client.email_address}`, '_blank')}
+                        disabled={!client.email_address}
                       >
                         <Mail className="w-3 h-3" />
                       </Button>
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => console.log('View details for client:', client.id)}
+                        onClick={() => console.log('View details for client:', client.client_id)}
                       >
                         <Eye className="w-3 h-3" />
                       </Button>

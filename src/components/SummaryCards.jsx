@@ -1,34 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, UserCheck, DollarSign, Clock } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-
-// API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
-
-// Fetch summary data from API
-const fetchSummaryData = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/summary`);
-    if (!response.ok) throw new Error('Failed to fetch summary data');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching summary data:', error);
-    // Fallback data for development
-    return {
-      totalLeads: 42,
-      clientsOnboarded: 18,
-      paymentsReceived: 24500,
-      invoicesPending: 7
-    };
-  }
-};
+import { useClientStats } from "@/hooks/useClientsData";
 
 export function SummaryCards() {
-  const { data: summaryData, isLoading, error } = useQuery({
-    queryKey: ['summaryData'],
-    queryFn: fetchSummaryData,
-  });
+  const { data: summaryData, isLoading, error } = useClientStats();
 
   if (isLoading) {
     return (
@@ -46,6 +22,10 @@ export function SummaryCards() {
         ))}
       </div>
     );
+  }
+
+  if (error) {
+    console.error('Error in SummaryCards:', error);
   }
 
   const summaryItems = [
