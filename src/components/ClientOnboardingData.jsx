@@ -106,6 +106,7 @@ export function ClientOnboardingData() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[100px]">Client ID</TableHead>
                 <TableHead className="w-[150px]">Client Info</TableHead>
                 <TableHead className="w-[200px]">Contact</TableHead>
                 <TableHead className="w-[180px]">Business</TableHead>
@@ -119,6 +120,11 @@ export function ClientOnboardingData() {
             <TableBody>
               {paginatedClients.map((client) => (
                 <TableRow key={client.client_id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <TableCell>
+                    <div className="font-mono text-sm font-medium text-blue-600 dark:text-blue-400">
+                      #{client.client_id}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="font-medium text-gray-900 dark:text-gray-100">
                       {client.client_name}
