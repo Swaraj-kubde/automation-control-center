@@ -1,5 +1,4 @@
-
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 export function useClientTableFilters(clients) {
   const [currentPage, setCurrentPage] = useState(1);
