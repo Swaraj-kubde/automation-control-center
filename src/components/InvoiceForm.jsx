@@ -12,11 +12,18 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
     email: "",
     invoice_date: "",
     status: "unpaid",
+    client_id: null,
   });
 
   useEffect(() => {
     if (invoice) {
-      setFormData(invoice);
+      setFormData({
+        client_name: invoice.client_name || "",
+        email: invoice.email || "",
+        invoice_date: invoice.invoice_date || "",
+        status: invoice.status || "unpaid",
+        client_id: invoice.client_id || null,
+      });
     }
   }, [invoice]);
 
@@ -33,12 +40,19 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
     }));
   };
 
+  const isFromClientSearch = invoice && invoice.client_id && !invoice.id;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <Card className="bg-white dark:bg-gray-800 w-full max-w-md mx-4">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold dark:text-gray-100">
-            {invoice ? "Edit Invoice" : "Add New Invoice"}
+            {invoice && invoice.id ? "Edit Invoice" : "Add New Invoice"}
+            {isFromClientSearch && (
+              <span className="text-sm font-normal text-green-600 dark:text-green-400 block">
+                (Pre-filled from Client ID: {invoice.client_id})
+              </span>
+            )}
           </CardTitle>
           <Button onClick={onClose} size="sm" variant="ghost">
             <X className="w-4 h-4" />
@@ -46,6 +60,18 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {formData.client_id && (
+              <div className="space-y-2">
+                <Label className="dark:text-gray-100">Client ID</Label>
+                <Input
+                  type="text"
+                  value={formData.client_id}
+                  disabled
+                  className="dark:bg-gray-600 dark:text-gray-100 bg-gray-100"
+                />
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="client_name" className="dark:text-gray-100">Client Name</Label>
               <Input
@@ -102,7 +128,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
 
             <div className="flex space-x-2 pt-4">
               <Button type="submit" disabled={isLoading} className="flex-1">
-                {isLoading ? "Saving..." : (invoice ? "Update" : "Create")}
+                {isLoading ? "Saving..." : (invoice && invoice.id ? "Update" : "Create")}
               </Button>
               <Button type="button" onClick={onClose} variant="outline" className="flex-1">
                 Cancel

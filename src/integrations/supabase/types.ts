@@ -16,12 +16,13 @@ export type Database = {
           client_name: string
           contacts: Json | null
           conversation: string | null
-          created_at: string | null
+          created_at: string
           email_address: string | null
           invoice_details: Json | null
           invoice_files: string[] | null
           key_challenges: string | null
           lead_handlings: Json | null
+          meeting_time: Json | null
           onboarding_details: string | null
           status: string | null
         }
@@ -31,12 +32,13 @@ export type Database = {
           client_name: string
           contacts?: Json | null
           conversation?: string | null
-          created_at?: string | null
+          created_at: string
           email_address?: string | null
           invoice_details?: Json | null
           invoice_files?: string[] | null
           key_challenges?: string | null
           lead_handlings?: Json | null
+          meeting_time?: Json | null
           onboarding_details?: string | null
           status?: string | null
         }
@@ -46,12 +48,13 @@ export type Database = {
           client_name?: string
           contacts?: Json | null
           conversation?: string | null
-          created_at?: string | null
+          created_at?: string
           email_address?: string | null
           invoice_details?: Json | null
           invoice_files?: string[] | null
           key_challenges?: string | null
           lead_handlings?: Json | null
+          meeting_time?: Json | null
           onboarding_details?: string | null
           status?: string | null
         }

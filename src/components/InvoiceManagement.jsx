@@ -1,13 +1,13 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Edit, Trash2, Mail, CheckCircle, XCircle } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, CheckCircle, XCircle, Search } from "lucide-react";
 import { InvoiceForm } from "./InvoiceForm";
 import { FollowUpForm } from "./FollowUpForm";
+import { ClientSearchDialog } from "./ClientSearchDialog";
 
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
@@ -112,6 +112,7 @@ export function InvoiceManagement() {
   const queryClient = useQueryClient();
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [showFollowUpForm, setShowFollowUpForm] = useState(false);
+  const [showClientSearch, setShowClientSearch] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
   const [editingFollowUp, setEditingFollowUp] = useState(null);
 
@@ -179,6 +180,12 @@ export function InvoiceManagement() {
     });
   };
 
+  const handleClientSelect = (clientData) => {
+    // Open the invoice form with pre-populated client data
+    setEditingInvoice(clientData);
+    setShowInvoiceForm(true);
+  };
+
   const getStatusBadge = (status) => {
     return (
       <Badge className={
@@ -228,10 +235,20 @@ export function InvoiceManagement() {
       <Card className="bg-white dark:bg-gray-800">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold dark:text-gray-100">Invoice Management</CardTitle>
-          <Button onClick={() => setShowInvoiceForm(true)} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Invoice
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => setShowClientSearch(true)} 
+              size="sm"
+              variant="outline"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Search by ID
+            </Button>
+            <Button onClick={() => setShowInvoiceForm(true)} size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Invoice
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -345,12 +362,12 @@ export function InvoiceManagement() {
         </CardContent>
       </Card>
 
-      {/* Forms */}
+      {/* Forms and Dialogs */}
       {showInvoiceForm && (
         <InvoiceForm
           invoice={editingInvoice}
           onSubmit={(data) => {
-            if (editingInvoice) {
+            if (editingInvoice && editingInvoice.id) {
               updateInvoiceMutation.mutate({ id: editingInvoice.id, ...data });
             } else {
               createInvoiceMutation.mutate(data);
@@ -377,6 +394,12 @@ export function InvoiceManagement() {
           isLoading={updateFollowUpMutation.isPending}
         />
       )}
+
+      <ClientSearchDialog
+        open={showClientSearch}
+        onClose={() => setShowClientSearch(false)}
+        onClientSelect={handleClientSelect}
+      />
     </div>
   );
 }
