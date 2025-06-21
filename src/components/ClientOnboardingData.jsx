@@ -1,13 +1,31 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Mail, Phone, Globe } from "lucide-react";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Eye, Mail, Phone, Globe, Download, Filter } from "lucide-react";
 import { useClientsData } from "@/hooks/useClientsData";
+import { useClientTableFilters } from "@/hooks/useClientTableFilters";
+import { ClientFilterDialog } from "@/components/ClientFilterDialog";
 
 export function ClientOnboardingData() {
   const { data: clients = [], isLoading } = useClientsData();
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  
+  const {
+    paginatedClients,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    filters,
+    setFilters,
+    resetFilters,
+    exportToCSV,
+    filteredCount,
+    totalCount
+  } = useClientTableFilters(clients);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -23,9 +41,7 @@ export function ClientOnboardingData() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   };
 
@@ -33,6 +49,8 @@ export function ClientOnboardingData() {
     if (!text || text.length <= maxLength) return text || 'N/A';
     return text.substring(0, maxLength) + '...';
   };
+
+  const hasActiveFilters = filters.dateFrom || filters.dateTo || filters.clientInfo || filters.contact;
 
   if (isLoading) {
     return (
@@ -56,10 +74,32 @@ export function ClientOnboardingData() {
   return (
     <Card className="bg-white dark:bg-gray-800">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold dark:text-gray-100 flex items-center gap-2">
-          <Eye className="w-5 h-5" />
-          Client Onboarding Submissions
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold dark:text-gray-100 flex items-center gap-2">
+            <Eye className="w-5 h-5" />
+            Client Onboarding Submissions
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={() => setFilterDialogOpen(true)} 
+              variant="outline" 
+              size="sm"
+              className={hasActiveFilters ? "border-blue-500 text-blue-600" : ""}
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              Filter {hasActiveFilters && `(${filteredCount})`}
+            </Button>
+            <Button onClick={exportToCSV} variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </Button>
+          </div>
+        </div>
+        {hasActiveFilters && (
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Showing {filteredCount} of {totalCount} submissions
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -77,7 +117,7 @@ export function ClientOnboardingData() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clients.map((client) => (
+              {paginatedClients.map((client) => (
                 <TableRow key={client.client_id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <TableCell>
                     <div className="font-medium text-gray-900 dark:text-gray-100">
@@ -148,11 +188,57 @@ export function ClientOnboardingData() {
             </TableBody>
           </Table>
         </div>
-        {clients.length === 0 && (
+
+        {paginatedClients.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            No client onboarding submissions found.
+            {hasActiveFilters ? 'No submissions match your filters.' : 'No client onboarding submissions found.'}
           </div>
         )}
+
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+
+        <ClientFilterDialog
+          open={filterDialogOpen}
+          onClose={() => setFilterDialogOpen(false)}
+          filters={filters}
+          setFilters={setFilters}
+          onReset={() => {
+            resetFilters();
+            setFilterDialogOpen(false);
+          }}
+        />
       </CardContent>
     </Card>
   );
