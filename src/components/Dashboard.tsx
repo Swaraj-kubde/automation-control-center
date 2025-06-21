@@ -35,7 +35,7 @@ const Dashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
+      <div className="min-h-screen flex w-full bg-gray-50 dark:bg-gray-900">
         <AppSidebar activeView={activeView} setActiveView={setActiveView} />
         <main className="flex-1 flex flex-col">
           <DashboardHeader />
