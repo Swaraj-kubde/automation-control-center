@@ -1,7 +1,9 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useClientsData } from "@/hooks/useClientsData";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,6 +11,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export function OnboardingTracker() {
   const queryClient = useQueryClient();
   const { data: clients = [], isLoading } = useClientsData();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Show 5 clients per page
 
   const mutation = useMutation({
     mutationFn: async (clientId) => {
@@ -40,6 +44,11 @@ export function OnboardingTracker() {
               client.status === 'contacted' ? 'In Progress' : 'Pending',
       sent_at: client.created_at ? new Date(client.created_at).toISOString().split('T')[0] : ''
     }));
+
+  // Calculate pagination
+  const totalPages = Math.ceil(onboardingClients.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedClients = onboardingClients.slice(startIndex, startIndex + itemsPerPage);
 
   const resendEmail = (id) => {
     mutation.mutate(id);
@@ -76,11 +85,18 @@ export function OnboardingTracker() {
   return (
     <Card className="bg-white dark:bg-gray-800">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold dark:text-gray-100">Client Onboarding Status</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold dark:text-gray-100">Client Onboarding Status</CardTitle>
+          {onboardingClients.length > 0 && (
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, onboardingClients.length)} of {onboardingClients.length}
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {onboardingClients.map((client) => (
+          {paginatedClients.map((client) => (
             <div key={client.id} className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg">
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
@@ -104,9 +120,44 @@ export function OnboardingTracker() {
             </div>
           ))}
         </div>
+        
         {onboardingClients.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             No clients in onboarding process.
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         )}
       </CardContent>
