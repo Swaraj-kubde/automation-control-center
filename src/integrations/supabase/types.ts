@@ -32,7 +32,7 @@ export type Database = {
           client_name: string
           contacts?: Json | null
           conversation?: string | null
-          created_at: string
+          created_at?: string
           email_address?: string | null
           invoice_details?: Json | null
           invoice_files?: string[] | null
