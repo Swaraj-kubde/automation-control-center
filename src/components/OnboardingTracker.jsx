@@ -97,15 +97,15 @@ export function OnboardingTracker() {
       <CardContent>
         <div className="space-y-4">
           {paginatedClients.map((client) => (
-            <div key={client.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
+            <div key={client.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200">
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <h3 className="font-medium text-gray-900 dark:text-gray-100">{client.client_name}</h3>
-                  <Badge className={getStatusColor(client.status)}>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">{client.client_name}</h3>
+                  <Badge className={`${getStatusColor(client.status)} hover:opacity-90 transition-opacity duration-200`}>
                     {client.status}
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Created: {client.sent_at}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200">Created: {client.sent_at}</p>
               </div>
               {client.status !== "Completed" && (
                 <Button 
@@ -113,7 +113,7 @@ export function OnboardingTracker() {
                   size="sm"
                   variant="outline"
                   disabled={mutation.isPending}
-                  className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 transition-all duration-200"
                 >
                   {mutation.isPending ? 'Sending...' : 'Resend Email'}
                 </Button>
@@ -135,7 +135,7 @@ export function OnboardingTracker() {
                 <PaginationItem>
                   <PaginationPrevious 
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700`}
+                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all duration-200`}
                   />
                 </PaginationItem>
                 
@@ -144,7 +144,7 @@ export function OnboardingTracker() {
                     <PaginationLink
                       onClick={() => setCurrentPage(page)}
                       isActive={currentPage === page}
-                      className={`cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${currentPage === page ? 'bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100' : ''}`}
+                      className={`cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all duration-200 ${currentPage === page ? 'bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100' : ''}`}
                     >
                       {page}
                     </PaginationLink>
@@ -154,7 +154,7 @@ export function OnboardingTracker() {
                 <PaginationItem>
                   <PaginationNext 
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700`}
+                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all duration-200`}
                   />
                 </PaginationItem>
               </PaginationContent>

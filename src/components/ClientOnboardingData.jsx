@@ -84,12 +84,12 @@ export function ClientOnboardingData() {
               onClick={() => setFilterDialogOpen(true)} 
               variant="outline" 
               size="sm"
-              className={`${hasActiveFilters ? "border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400" : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200"} hover:bg-gray-100 dark:hover:bg-gray-700`}
+              className={`${hasActiveFilters ? "border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400" : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200"} hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 transition-all duration-200`}
             >
               <Filter className="w-4 h-4 mr-2" />
               Filter {hasActiveFilters && `(${filteredCount})`}
             </Button>
-            <Button onClick={exportToCSV} variant="outline" size="sm" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <Button onClick={exportToCSV} variant="outline" size="sm" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 transition-all duration-200">
               <Download className="w-4 h-4 mr-2" />
               Export CSV
             </Button>
@@ -105,79 +105,79 @@ export function ClientOnboardingData() {
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-gray-200 dark:border-gray-700">
-                <TableHead className="w-[100px] text-gray-900 dark:text-gray-100">Client ID</TableHead>
-                <TableHead className="w-[150px] text-gray-900 dark:text-gray-100">Client Info</TableHead>
-                <TableHead className="w-[200px] text-gray-900 dark:text-gray-100">Contact</TableHead>
-                <TableHead className="w-[180px] text-gray-900 dark:text-gray-100">Business</TableHead>
-                <TableHead className="w-[250px] text-gray-900 dark:text-gray-100">Key Challenges</TableHead>
-                <TableHead className="w-[200px] text-gray-900 dark:text-gray-100">Lead Handling</TableHead>
-                <TableHead className="w-[120px] text-gray-900 dark:text-gray-100">Submitted</TableHead>
-                <TableHead className="w-[100px] text-gray-900 dark:text-gray-100">Status</TableHead>
-                <TableHead className="w-[100px] text-gray-900 dark:text-gray-100">Actions</TableHead>
+              <TableRow className="border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <TableHead className="w-[100px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Client ID</TableHead>
+                <TableHead className="w-[150px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Client Info</TableHead>
+                <TableHead className="w-[200px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Contact</TableHead>
+                <TableHead className="w-[180px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Business</TableHead>
+                <TableHead className="w-[250px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Key Challenges</TableHead>
+                <TableHead className="w-[200px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Lead Handling</TableHead>
+                <TableHead className="w-[120px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Submitted</TableHead>
+                <TableHead className="w-[100px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Status</TableHead>
+                <TableHead className="w-[100px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedClients.map((client) => (
-                <TableRow key={client.client_id} className="hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700">
-                  <TableCell>
-                    <div className="font-mono text-sm font-medium text-blue-600 dark:text-blue-400">
+                <TableRow key={client.client_id} className="hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700 transition-all duration-200">
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <div className="font-mono text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 transition-colors duration-200">
                       #{client.client_id}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <div className="font-medium text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200">
                       {client.client_name}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200">
                         <Mail className="w-3 h-3" />
                         <span className="truncate max-w-[150px]">{client.email_address || 'No email'}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200">
                         <Phone className="w-3 h-3" />
                         <span>{client.contacts?.phone || 'No phone'}</span>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                     <div className="flex items-center gap-1 text-sm">
                       <Globe className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                      <span className="font-medium truncate max-w-[150px] text-gray-900 dark:text-gray-100" title={client.business}>
+                      <span className="font-medium truncate max-w-[150px] text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-white transition-colors duration-200" title={client.business}>
                         {client.business || 'No business info'}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-gray-600 dark:text-gray-300" title={client.key_challenges}>
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200" title={client.key_challenges}>
                       {truncateText(client.key_challenges, 60)}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-gray-600 dark:text-gray-300" title={JSON.stringify(client.lead_handlings)}>
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200" title={JSON.stringify(client.lead_handlings)}>
                       {truncateText(client.lead_handlings?.description || 'No lead handling info', 50)}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors duration-200">
                       {formatDate(client.created_at)}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(client.status)}>
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <Badge className={`${getStatusColor(client.status)} hover:opacity-90 transition-opacity duration-200`}>
                       {client.status || 'pending'}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                     <div className="flex gap-1">
                       <Button 
                         size="sm" 
                         variant="outline"
                         onClick={() => window.open(`mailto:${client.email_address}`, '_blank')}
                         disabled={!client.email_address}
-                        className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 transition-all duration-200"
                       >
                         <Mail className="w-3 h-3" />
                       </Button>
@@ -185,7 +185,7 @@ export function ClientOnboardingData() {
                         size="sm" 
                         variant="outline"
                         onClick={() => console.log('View details for client:', client.client_id)}
-                        className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 transition-all duration-200"
                       >
                         <Eye className="w-3 h-3" />
                       </Button>
@@ -210,7 +210,7 @@ export function ClientOnboardingData() {
                 <PaginationItem>
                   <PaginationPrevious 
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700`}
+                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all duration-200`}
                   />
                 </PaginationItem>
                 
@@ -219,7 +219,7 @@ export function ClientOnboardingData() {
                     <PaginationLink
                       onClick={() => setCurrentPage(page)}
                       isActive={currentPage === page}
-                      className={`cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${currentPage === page ? 'bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100' : ''}`}
+                      className={`cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all duration-200 ${currentPage === page ? 'bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100' : ''}`}
                     >
                       {page}
                     </PaginationLink>
@@ -229,7 +229,7 @@ export function ClientOnboardingData() {
                 <PaginationItem>
                   <PaginationNext 
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700`}
+                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-all duration-200`}
                   />
                 </PaginationItem>
               </PaginationContent>
