@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,6 +57,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
       deal_id: formData.deal_id ? parseInt(formData.deal_id) : null,
     };
     onSubmit(submitData);
+    onClose();
   };
 
   const handleChange = (e) => {
@@ -229,7 +229,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
 
             <div className="flex space-x-2 pt-4">
               <Button type="submit" disabled={isLoading} className="flex-1">
-                {isLoading ? "Saving..." : (invoice && invoice.id ? "Update" : "Create")}
+                {isLoading ? "Saving..." : (invoice && invoice.id ? "Update Invoice" : "Create Invoice")}
               </Button>
               <Button type="button" onClick={onClose} variant="outline" className="flex-1">
                 Cancel
