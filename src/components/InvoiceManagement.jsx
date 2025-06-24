@@ -111,6 +111,17 @@ export function InvoiceManagement() {
     );
   };
 
+  // Helper function to safely display invoice ID
+  const formatInvoiceId = (invoice) => {
+    if (invoice.invoice_number) {
+      return invoice.invoice_number;
+    }
+    if (invoice.id && typeof invoice.id === 'string') {
+      return `${invoice.id.substring(0, 8)}...`;
+    }
+    return 'N/A';
+  };
+
   if (invoicesLoading || followUpsLoading) {
     return (
       <div className="space-y-6">
@@ -177,7 +188,7 @@ export function InvoiceManagement() {
                 {invoices.map((invoice) => (
                   <tr key={invoice.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="p-3 font-medium dark:text-gray-100">
-                      {invoice.invoice_number || `${invoice.id.substring(0, 8)}...`}
+                      {formatInvoiceId(invoice)}
                     </td>
                     <td className="p-3 font-medium dark:text-gray-100">{invoice.client_name}</td>
                     <td className="p-3 dark:text-gray-100">{invoice.email}</td>
