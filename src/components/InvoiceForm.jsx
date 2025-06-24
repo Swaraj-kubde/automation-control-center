@@ -24,7 +24,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
   useEffect(() => {
     if (invoice) {
       setFormData({
-        deal_id: invoice.deal_id || null,
+        deal_id: invoice.deal_id || invoice.client_id || null,
         client_name: invoice.client_name || "",
         email: invoice.email || "",
         invoice_date: invoice.invoice_date || "",

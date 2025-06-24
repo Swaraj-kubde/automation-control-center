@@ -3,10 +3,11 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Mail, CheckCircle, XCircle, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Mail, CheckCircle, XCircle, Search, Users } from "lucide-react";
 import { InvoiceForm } from "./InvoiceForm";
 import { FollowUpForm } from "./FollowUpForm";
 import { InvoiceSearchDialog } from "./InvoiceSearchDialog";
+import { ClientSearchDialog } from "./ClientSearchDialog";
 import { 
   useInvoicesData, 
   useFollowUpsData, 
@@ -20,6 +21,7 @@ export function InvoiceManagement() {
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [showFollowUpForm, setShowFollowUpForm] = useState(false);
   const [showInvoiceSearch, setShowInvoiceSearch] = useState(false);
+  const [showClientSearch, setShowClientSearch] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
   const [editingFollowUp, setEditingFollowUp] = useState(null);
 
@@ -56,11 +58,17 @@ export function InvoiceManagement() {
     setShowInvoiceForm(true);
   };
 
+  const handleClientSelect = (clientData) => {
+    setEditingInvoice(clientData);
+    setShowInvoiceForm(true);
+  };
+
   const handleCreateInvoice = (data) => {
     // Generate invoice number if not provided
     const invoiceData = {
       ...data,
       invoice_number: data.invoice_number || `INV-${Date.now()}`,
+      deal_id: data.client_id || data.deal_id || null
     };
     createInvoiceMutation.mutate(invoiceData);
   };
@@ -130,12 +138,20 @@ export function InvoiceManagement() {
           <CardTitle className="text-lg font-semibold dark:text-gray-100">Invoice Management</CardTitle>
           <div className="flex gap-2">
             <Button 
+              onClick={() => setShowClientSearch(true)} 
+              size="sm"
+              variant="outline"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Search Client
+            </Button>
+            <Button 
               onClick={() => setShowInvoiceSearch(true)} 
               size="sm"
               variant="outline"
             >
               <Search className="w-4 h-4 mr-2" />
-              Search by ID
+              Search Invoice
             </Button>
             <Button onClick={() => setShowInvoiceForm(true)} size="sm">
               <Plus className="w-4 h-4 mr-2" />
@@ -298,6 +314,12 @@ export function InvoiceManagement() {
         open={showInvoiceSearch}
         onClose={() => setShowInvoiceSearch(false)}
         onInvoiceSelect={handleInvoiceSelect}
+      />
+
+      <ClientSearchDialog
+        open={showClientSearch}
+        onClose={() => setShowClientSearch(false)}
+        onClientSelect={handleClientSelect}
       />
     </div>
   );
