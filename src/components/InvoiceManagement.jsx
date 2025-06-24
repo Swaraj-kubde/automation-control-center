@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -59,8 +58,10 @@ export function InvoiceManagement() {
   };
 
   const handleClientSelect = (clientData) => {
+    console.log('Client selected for invoice:', clientData);
     setEditingInvoice(clientData);
     setShowInvoiceForm(true);
+    setShowClientSearch(false);
   };
 
   const handleCreateInvoice = (data) => {

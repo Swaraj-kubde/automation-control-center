@@ -22,14 +22,17 @@ export function ClientSearchDialog({ open, onClose, onClientSelect }) {
 
   const handleAddClient = () => {
     if (selectedClient) {
+      console.log('Adding client to invoice:', selectedClient);
       // Map client data to invoice format
       const invoiceData = {
         client_name: selectedClient.client_name,
         email: selectedClient.email_address || "",
         invoice_date: new Date().toISOString().split('T')[0],
         status: "unpaid",
-        client_id: selectedClient.client_id
+        client_id: selectedClient.client_id,
+        deal_id: selectedClient.client_id
       };
+      console.log('Mapped invoice data:', invoiceData);
       onClientSelect(invoiceData);
       handleClose();
     }
@@ -78,13 +81,13 @@ export function ClientSearchDialog({ open, onClose, onClientSelect }) {
           )}
 
           {selectedClient && (
-            <Card className="border-green-200">
+            <Card className="border-green-200 bg-green-50">
               <CardContent className="pt-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-lg">{selectedClient.client_name}</h3>
-                      <p className="text-sm text-gray-600">ID: {selectedClient.client_id}</p>
+                      <h3 className="font-semibold text-lg text-green-800">{selectedClient.client_name}</h3>
+                      <p className="text-sm text-green-600">ID: {selectedClient.client_id}</p>
                     </div>
                   </div>
                   
@@ -103,7 +106,7 @@ export function ClientSearchDialog({ open, onClose, onClientSelect }) {
                   <div className="flex gap-2 pt-3">
                     <Button 
                       onClick={handleAddClient}
-                      className="flex-1"
+                      className="flex-1 bg-green-600 hover:bg-green-700"
                       size="sm"
                     >
                       <Plus className="w-4 h-4 mr-2" />
