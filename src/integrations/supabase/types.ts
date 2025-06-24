@@ -60,6 +60,144 @@ export type Database = {
         }
         Relationships: []
       }
+      deals: {
+        Row: {
+          client_details: Json
+          client_id: number
+          created_at: string
+          deal_id: number
+          invoice_details: Json | null
+          purchase_details: Json | null
+          purchase_status: Database["public"]["Enums"]["status"]
+          requested_followups: Json | null
+        }
+        Insert: {
+          client_details: Json
+          client_id: number
+          created_at: string
+          deal_id?: number
+          invoice_details?: Json | null
+          purchase_details?: Json | null
+          purchase_status?: Database["public"]["Enums"]["status"]
+          requested_followups?: Json | null
+        }
+        Update: {
+          client_details?: Json
+          client_id?: number
+          created_at?: string
+          deal_id?: number
+          invoice_details?: Json | null
+          purchase_details?: Json | null
+          purchase_status?: Database["public"]["Enums"]["status"]
+          requested_followups?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "Deals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["client_id"]
+          },
+        ]
+      }
+      follow_ups: {
+        Row: {
+          client_name: string
+          created_at: string | null
+          email: string
+          followed_up: boolean | null
+          id: string
+          invoice_id: string | null
+          last_follow_up: string | null
+          notes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_name: string
+          created_at?: string | null
+          email: string
+          followed_up?: boolean | null
+          id?: string
+          invoice_id?: string | null
+          last_follow_up?: string | null
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_name?: string
+          created_at?: string | null
+          email?: string
+          followed_up?: boolean | null
+          id?: string
+          invoice_id?: string | null
+          last_follow_up?: string | null
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_ups_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount: number | null
+          client_name: string
+          created_at: string | null
+          deal_id: number | null
+          due_date: string | null
+          email: string
+          id: string
+          invoice_date: string
+          invoice_number: string | null
+          notes: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount?: number | null
+          client_name: string
+          created_at?: string | null
+          deal_id?: number | null
+          due_date?: string | null
+          email: string
+          id?: string
+          invoice_date: string
+          invoice_number?: string | null
+          notes?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number | null
+          client_name?: string
+          created_at?: string | null
+          deal_id?: number | null
+          due_date?: string | null
+          email?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string | null
+          notes?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["deal_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -68,7 +206,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      status: "ACTIVE" | "PENDING" | "EXPIRED" | "INACTIVE"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -183,6 +321,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      status: ["ACTIVE", "PENDING", "EXPIRED", "INACTIVE"],
+    },
   },
 } as const

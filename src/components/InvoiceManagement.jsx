@@ -1,166 +1,37 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Edit, Trash2, Mail, CheckCircle, XCircle, Search } from "lucide-react";
 import { InvoiceForm } from "./InvoiceForm";
 import { FollowUpForm } from "./FollowUpForm";
-import { ClientSearchDialog } from "./ClientSearchDialog";
-
-// API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
-
-// Fetch invoices from API
-const fetchInvoices = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/invoices-management`);
-    if (!response.ok) throw new Error('Failed to fetch invoices');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching invoices:', error);
-    // Fallback data for development
-    return [
-      {
-        id: 1,
-        client_name: "Acme Corp",
-        email: "john@acmecorp.com",
-        invoice_date: "2024-06-15",
-        status: "paid",
-      },
-      {
-        id: 2,
-        client_name: "Tech Solutions LLC",
-        email: "sarah@techsolutions.com",
-        invoice_date: "2024-06-12",
-        status: "unpaid",
-      },
-    ];
-  }
-};
-
-// Fetch follow-ups from API
-const fetchFollowUps = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/follow-ups`);
-    if (!response.ok) throw new Error('Failed to fetch follow-ups');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching follow-ups:', error);
-    // Fallback data for development
-    return [
-      {
-        id: 1,
-        client_name: "Tech Solutions LLC",
-        email: "sarah@techsolutions.com",
-        followed_up: false,
-        last_follow_up: null,
-      },
-      {
-        id: 2,
-        client_name: "Digital Marketing Co",
-        email: "mike@digitalmarketing.co",
-        followed_up: true,
-        last_follow_up: "2024-06-14",
-      },
-    ];
-  }
-};
-
-// CRUD operations for invoices
-const createInvoice = async (invoiceData) => {
-  const response = await fetch(`${API_BASE_URL}/invoices-management`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(invoiceData),
-  });
-  if (!response.ok) throw new Error('Failed to create invoice');
-  return response.json();
-};
-
-const updateInvoice = async ({ id, ...invoiceData }) => {
-  const response = await fetch(`${API_BASE_URL}/invoices-management/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(invoiceData),
-  });
-  if (!response.ok) throw new Error('Failed to update invoice');
-  return response.json();
-};
-
-const deleteInvoice = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/invoices-management/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) throw new Error('Failed to delete invoice');
-  return response.json();
-};
-
-// CRUD operations for follow-ups
-const updateFollowUp = async ({ id, ...followUpData }) => {
-  const response = await fetch(`${API_BASE_URL}/follow-ups/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(followUpData),
-  });
-  if (!response.ok) throw new Error('Failed to update follow-up');
-  return response.json();
-};
+import { InvoiceSearchDialog } from "./InvoiceSearchDialog";
+import { 
+  useInvoicesData, 
+  useFollowUpsData, 
+  useCreateInvoice, 
+  useUpdateInvoice, 
+  useDeleteInvoice, 
+  useUpdateFollowUp 
+} from "@/hooks/useInvoicesData";
 
 export function InvoiceManagement() {
-  const queryClient = useQueryClient();
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [showFollowUpForm, setShowFollowUpForm] = useState(false);
-  const [showClientSearch, setShowClientSearch] = useState(false);
+  const [showInvoiceSearch, setShowInvoiceSearch] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState(null);
   const [editingFollowUp, setEditingFollowUp] = useState(null);
 
   // Queries
-  const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
-    queryKey: ['invoices-management'],
-    queryFn: fetchInvoices,
-  });
+  const { data: invoices = [], isLoading: invoicesLoading } = useInvoicesData();
+  const { data: followUps = [], isLoading: followUpsLoading } = useFollowUpsData();
 
-  const { data: followUps = [], isLoading: followUpsLoading } = useQuery({
-    queryKey: ['follow-ups'],
-    queryFn: fetchFollowUps,
-  });
-
-  // Mutations for invoices
-  const createInvoiceMutation = useMutation({
-    mutationFn: createInvoice,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['invoices-management'] });
-      setShowInvoiceForm(false);
-    },
-  });
-
-  const updateInvoiceMutation = useMutation({
-    mutationFn: updateInvoice,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['invoices-management'] });
-      setEditingInvoice(null);
-      setShowInvoiceForm(false);
-    },
-  });
-
-  const deleteInvoiceMutation = useMutation({
-    mutationFn: deleteInvoice,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['invoices-management'] });
-    },
-  });
-
-  // Mutations for follow-ups
-  const updateFollowUpMutation = useMutation({
-    mutationFn: updateFollowUp,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['follow-ups'] });
-      setEditingFollowUp(null);
-      setShowFollowUpForm(false);
-    },
-  });
+  // Mutations
+  const createInvoiceMutation = useCreateInvoice();
+  const updateInvoiceMutation = useUpdateInvoice();
+  const deleteInvoiceMutation = useDeleteInvoice();
+  const updateFollowUpMutation = useUpdateFollowUp();
 
   const handleEditInvoice = (invoice) => {
     setEditingInvoice(invoice);
@@ -180,19 +51,41 @@ export function InvoiceManagement() {
     });
   };
 
-  const handleClientSelect = (clientData) => {
-    // Open the invoice form with pre-populated client data
-    setEditingInvoice(clientData);
+  const handleInvoiceSelect = (invoiceData) => {
+    setEditingInvoice(invoiceData);
     setShowInvoiceForm(true);
   };
 
+  const handleCreateInvoice = (data) => {
+    // Generate invoice number if not provided
+    const invoiceData = {
+      ...data,
+      invoice_number: data.invoice_number || `INV-${Date.now()}`,
+    };
+    createInvoiceMutation.mutate(invoiceData);
+  };
+
+  const handleUpdateInvoice = (data) => {
+    updateInvoiceMutation.mutate({ id: editingInvoice.id, ...data });
+  };
+
+  const formatCurrency = (amount) => {
+    if (!amount) return 'N/A';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
   const getStatusBadge = (status) => {
+    const statusColors = {
+      paid: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      unpaid: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+      pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+    };
+    
     return (
-      <Badge className={
-        status === "paid" 
-          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" 
-          : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-      }>
+      <Badge className={statusColors[status] || statusColors.unpaid}>
         {status}
       </Badge>
     );
@@ -237,7 +130,7 @@ export function InvoiceManagement() {
           <CardTitle className="text-lg font-semibold dark:text-gray-100">Invoice Management</CardTitle>
           <div className="flex gap-2">
             <Button 
-              onClick={() => setShowClientSearch(true)} 
+              onClick={() => setShowInvoiceSearch(true)} 
               size="sm"
               variant="outline"
             >
@@ -255,9 +148,11 @@ export function InvoiceManagement() {
             <table className="w-full">
               <thead>
                 <tr className="border-b dark:border-gray-700">
+                  <th className="text-left p-3 font-medium dark:text-gray-100">Invoice #</th>
                   <th className="text-left p-3 font-medium dark:text-gray-100">Client</th>
-                  <th className="text-left p-3 font-medium dark:text-gray-100">Email Address</th>
-                  <th className="text-left p-3 font-medium dark:text-gray-100">Invoice Date Sent</th>
+                  <th className="text-left p-3 font-medium dark:text-gray-100">Email</th>
+                  <th className="text-left p-3 font-medium dark:text-gray-100">Amount</th>
+                  <th className="text-left p-3 font-medium dark:text-gray-100">Date</th>
                   <th className="text-left p-3 font-medium dark:text-gray-100">Status</th>
                   <th className="text-left p-3 font-medium dark:text-gray-100">Actions</th>
                 </tr>
@@ -265,8 +160,12 @@ export function InvoiceManagement() {
               <tbody>
                 {invoices.map((invoice) => (
                   <tr key={invoice.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="p-3 font-medium dark:text-gray-100">
+                      {invoice.invoice_number || `${invoice.id.substring(0, 8)}...`}
+                    </td>
                     <td className="p-3 font-medium dark:text-gray-100">{invoice.client_name}</td>
                     <td className="p-3 dark:text-gray-100">{invoice.email}</td>
+                    <td className="p-3 dark:text-gray-100">{formatCurrency(invoice.amount)}</td>
                     <td className="p-3 dark:text-gray-100">{invoice.invoice_date}</td>
                     <td className="p-3">{getStatusBadge(invoice.status)}</td>
                     <td className="p-3">
@@ -368,9 +267,9 @@ export function InvoiceManagement() {
           invoice={editingInvoice}
           onSubmit={(data) => {
             if (editingInvoice && editingInvoice.id) {
-              updateInvoiceMutation.mutate({ id: editingInvoice.id, ...data });
+              handleUpdateInvoice(data);
             } else {
-              createInvoiceMutation.mutate(data);
+              handleCreateInvoice(data);
             }
           }}
           onClose={() => {
@@ -395,10 +294,10 @@ export function InvoiceManagement() {
         />
       )}
 
-      <ClientSearchDialog
-        open={showClientSearch}
-        onClose={() => setShowClientSearch(false)}
-        onClientSelect={handleClientSelect}
+      <InvoiceSearchDialog
+        open={showInvoiceSearch}
+        onClose={() => setShowInvoiceSearch(false)}
+        onInvoiceSelect={handleInvoiceSelect}
       />
     </div>
   );
