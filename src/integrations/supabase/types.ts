@@ -60,6 +60,60 @@ export type Database = {
         }
         Relationships: []
       }
+      cv_evaluations: {
+        Row: {
+          ai_summary: string | null
+          candidate_name: string
+          city: string | null
+          consideration: string | null
+          created_at: string
+          date_of_birth: string | null
+          education: string | null
+          email: string | null
+          evaluation_date: string
+          id: string
+          job_history: string | null
+          phone: string | null
+          skills: string | null
+          updated_at: string
+          vote: number | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          candidate_name: string
+          city?: string | null
+          consideration?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          education?: string | null
+          email?: string | null
+          evaluation_date?: string
+          id?: string
+          job_history?: string | null
+          phone?: string | null
+          skills?: string | null
+          updated_at?: string
+          vote?: number | null
+        }
+        Update: {
+          ai_summary?: string | null
+          candidate_name?: string
+          city?: string | null
+          consideration?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          education?: string | null
+          email?: string | null
+          evaluation_date?: string
+          id?: string
+          job_history?: string | null
+          phone?: string | null
+          skills?: string | null
+          updated_at?: string
+          vote?: number | null
+        }
+        Relationships: []
+      }
       deals: {
         Row: {
           client_details: Json

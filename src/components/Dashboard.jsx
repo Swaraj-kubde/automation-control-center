@@ -9,6 +9,7 @@ import { InvoiceTracker } from "@/components/InvoiceTracker";
 import { LeadQualificationPipeline } from "@/components/LeadQualificationPipeline";
 import { ClientOnboardingData } from "@/components/ClientOnboardingData";
 import { InvoiceManagement } from "@/components/InvoiceManagement";
+import { CVEvaluationSystem } from "@/components/CVEvaluationSystem";
 import { useState } from "react";
 
 const Dashboard = () => {
@@ -29,6 +30,8 @@ const Dashboard = () => {
         );
       case "invoices":
         return <InvoiceManagement />;
+      case "cv-evaluation":
+        return <CVEvaluationSystem />;
       default:
         return (
           <div className="space-y-6">

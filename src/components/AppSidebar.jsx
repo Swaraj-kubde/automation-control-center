@@ -1,5 +1,5 @@
 
-import { BarChart3, Users, UserCheck, Receipt, Home, Target } from "lucide-react";
+import { BarChart3, Users, UserCheck, Receipt, Home, Target, FileText } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +37,11 @@ const menuItems = [
     title: "Invoices",
     icon: Receipt,
     key: "invoices",
+  },
+  {
+    title: "CV Evaluation",
+    icon: FileText,
+    key: "cv-evaluation",
   },
 ];
 
