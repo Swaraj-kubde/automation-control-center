@@ -4,7 +4,7 @@ import { Users, UserCheck, DollarSign, Clock } from "lucide-react";
 import { useClientStats } from "@/hooks/useClientsData";
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import useClientStats from "./useClientStats"
+import clientStats from "./useClientStats"
 
 
 
