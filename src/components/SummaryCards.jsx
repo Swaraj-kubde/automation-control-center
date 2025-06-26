@@ -6,12 +6,15 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 
-const supabase = createClient(
- "https://lhotzltrakfnmbjsxlif.supabase.co",
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxob3R6bHRyYWtmbm1ianN4bGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNTU1MzksImV4cCI6MjA2NTYzMTUzOX0.Ao95MYjZLeFTFfZ5oDAUk1OzMwAxyvf04KxEDVDhdHc'
-);
 
+
+export function SummaryCards() {
+  const { data: summaryData, isLoading, error } = useClientStats();
   const [clientCount, setClientCount] = useState(0);
+  const supabase = createClient(
+    "https://lhotzltrakfnmbjsxlif.supabase.co",
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxob3R6bHRyYWtmbm1ianN4bGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNTU1MzksImV4cCI6MjA2NTYzMTUzOX0.Ao95MYjZLeFTFfZ5oDAUk1OzMwAxyvf04KxEDVDhdHc'
+  );
 
   useEffect(() => {
     const fetchClientCount = async () => {
@@ -29,9 +32,6 @@ const supabase = createClient(
     fetchClientCount();
   }, []);
 
-
-export function SummaryCards() {
-  const { data: summaryData, isLoading, error } = useClientStats();
 
   if (isLoading) {
     return (
@@ -65,7 +65,7 @@ export function SummaryCards() {
     },
     {
       title: "Clients Onboarded",
-      value: {clientCount} || "0",
+      value:clientCount.toString() || "0",
       icon: UserCheck,
       change: "+8%",
       changeType: "positive",
@@ -98,13 +98,12 @@ export function SummaryCards() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.value}</div>
-            <p className={`text-xs ${
-              item.changeType === "positive" 
-                ? "text-green-600 dark:text-green-400" 
-                : item.changeType === "negative" 
-                ? "text-red-600 dark:text-red-400" 
-                : "text-gray-600 dark:text-gray-400"
-            }`}>
+            <p className={`text-xs ${item.changeType === "positive"
+                ? "text-green-600 dark:text-green-400"
+                : item.changeType === "negative"
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-gray-600 dark:text-gray-400"
+              }`}>
               {item.change} from last month
             </p>
           </CardContent>
