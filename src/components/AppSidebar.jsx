@@ -52,7 +52,7 @@ export function AppSidebar({ activeView, setActiveView }) {
       <SidebarHeader className="p-6">
         <div className="flex items-center space-x-2">
           <BarChart3 className="w-8 h-8 text-blue-600" />
-          <span className="text-xl font-bold text-gray-900 dark:text-gray-100">AutoBiz</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-gray-100">EvolvynAI</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
