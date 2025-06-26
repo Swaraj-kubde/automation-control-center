@@ -4,7 +4,7 @@ import { Users, UserCheck, DollarSign, Clock } from "lucide-react";
 import { useClientStats } from "@/hooks/useClientsData";
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-
+import useClientStats from "./useClientStats"
 
 
 
@@ -15,7 +15,60 @@ export function SummaryCards() {
     "https://lhotzltrakfnmbjsxlif.supabase.co",
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxob3R6bHRyYWtmbm1ianN4bGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNTU1MzksImV4cCI6MjA2NTYzMTUzOX0.Ao95MYjZLeFTFfZ5oDAUk1OzMwAxyvf04KxEDVDhdHc'
   );
+  const [clientStats, setClientStats] = useState({
+    thisMonth: 0,
+    lastMonth: 0,
+    percentChange: "0%",
+    changeType: "neutral",
+  });
+useEffect(() => {
+    const getClientCounts = async () => {
+      const now = new Date();
+      const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
+      const { count: thisMonthCount } = await supabase
+        .from("clients")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", startOfThisMonth.toISOString());
+
+      const { count: lastMonthCount } = await supabase
+        .from("clients")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", startOfLastMonth.toISOString())
+        .lte("created_at", endOfLastMonth.toISOString());
+
+      let percentChange = "0%";
+      let changeType = "neutral";
+
+      if (!lastMonthCount || lastMonthCount === 0) {
+        if (thisMonthCount && thisMonthCount > 0) {
+          percentChange = "New data";
+          changeType = "positive";
+        } else {
+          percentChange = "0%";
+          changeType = "neutral";
+        }
+      } else {
+        const diff = thisMonthCount - lastMonthCount;
+        const percent = Math.round((diff / lastMonthCount) * 100);
+        percentChange = `${percent >= 0 ? "+" : ""}${percent}%`;
+        changeType = percent > 0 ? "positive" : percent < 0 ? "negative" : "neutral";
+      }
+
+      setClientStats({
+        thisMonth: thisMonthCount || 0,
+        lastMonth: lastMonthCount || 0,
+        percentChange,
+        changeType,
+      });
+    };
+
+    getClientCounts();
+  }, []);
+
+  
   useEffect(() => {
     const fetchClientCount = async () => {
       const { count, error } = await supabase
@@ -65,10 +118,10 @@ export function SummaryCards() {
     },
     {
       title: "Clients Onboarded",
-      value:clientCount.toString() || "0",
-      icon: UserCheck,
-      change: "+8%",
-      changeType: "positive",
+      value: clientCount.toString() || "0",
+       icon: UserCheck,
+      change: clientStats.percentChange,
+      changeType: clientStats.changeType,
     },
     {
       title: "Payments Received",
@@ -99,10 +152,10 @@ export function SummaryCards() {
           <CardContent>
             <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.value}</div>
             <p className={`text-xs ${item.changeType === "positive"
-                ? "text-green-600 dark:text-green-400"
-                : item.changeType === "negative"
-                  ? "text-red-600 dark:text-red-400"
-                  : "text-gray-600 dark:text-gray-400"
+              ? "text-green-600 dark:text-green-400"
+              : item.changeType === "negative"
+                ? "text-red-600 dark:text-red-400"
+                : "text-gray-600 dark:text-gray-400"
               }`}>
               {item.change} from last month
             </p>
