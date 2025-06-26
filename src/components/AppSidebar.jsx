@@ -23,11 +23,12 @@ const menuItems = [
     icon: Users,
     key: "leads",
   },
-  {
-    title: "Lead Qualification",
-    icon: Target,
-    key: "qualification",
-  },
+  // ,
+  // {
+  //   title: "Lead Qualification",
+  //   icon: Target,
+  //   key: "qualification",
+  // },
   {
     title: "Onboarding",
     icon: UserCheck,

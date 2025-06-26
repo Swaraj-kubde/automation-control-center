@@ -6,7 +6,7 @@ import { SummaryCards } from "@/components/SummaryCards";
 import { LeadsOverview } from "@/components/LeadsOverview";
 import { OnboardingTracker } from "@/components/OnboardingTracker";
 import { InvoiceTracker } from "@/components/InvoiceTracker";
-import { LeadQualificationPipeline } from "@/components/LeadQualificationPipeline";
+// import { LeadQualificationPipeline } from "@/components/LeadQualificationPipeline";
 import { ClientOnboardingData } from "@/components/ClientOnboardingData";
 import { InvoiceManagement } from "@/components/InvoiceManagement";
 import { CVEvaluationSystem } from "@/components/CVEvaluationSystem";
@@ -19,8 +19,8 @@ const Dashboard = () => {
     switch (activeView) {
       case "leads":
         return <LeadsOverview />;
-      case "qualification":
-        return <LeadQualificationPipeline />;
+      // case "qualification":
+      //   return <LeadQualificationPipeline />;
       case "onboarding":
         return (
           <div className="space-y-6">
