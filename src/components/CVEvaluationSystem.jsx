@@ -199,7 +199,7 @@ export function CVEvaluationSystem() {
                       <TableCell>
                         {evaluation.vote ? (
                           <Badge className={getVoteColor(evaluation.vote)}>
-                            {evaluation.vote}/100
+                            {evaluation.vote}/10
                           </Badge>
                         ) : (
                           "-"

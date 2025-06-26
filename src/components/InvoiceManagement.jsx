@@ -157,14 +157,14 @@ export function InvoiceManagement() {
               <Users className="w-4 h-4 mr-2" />
               Search Client
             </Button>
-            <Button 
+            {/* <Button 
               onClick={() => setShowInvoiceSearch(true)} 
               size="sm"
               variant="outline"
             >
               <Search className="w-4 h-4 mr-2" />
               Search Invoice
-            </Button>
+            </Button> */}
             <Button onClick={() => setShowInvoiceForm(true)} size="sm">
               <Plus className="w-4 h-4 mr-2" />
               Add Invoice
