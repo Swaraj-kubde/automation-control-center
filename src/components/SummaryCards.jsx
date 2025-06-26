@@ -16,7 +16,7 @@ const supabase = createClient(
   useEffect(() => {
     const fetchClientCount = async () => {
       const { count, error } = await supabase
-        .from('client_onboarding_submissions')
+        .from('clients')
         .select('*', { count: 'exact', head: true });
 
       if (error) {
