@@ -106,20 +106,7 @@ export function SummaryCards() {
       change: clientGrowth.percentChange,
       changeType: clientGrowth.changeType,
     },
-    // {
-    //   title: "Payments Received",
-    //   value: `$${summaryData?.paymentsReceived?.toLocaleString() || "0"}`,
-    //   icon: DollarSign,
-    //   change: "+15%",
-    //   changeType: "positive",
-    // },
-    // {
-    //   title: "Invoices Pending",
-    //   value: summaryData?.invoicesPending?.toString() || "0",
-    //   icon: Clock,
-    //   change: "-3",
-    //   changeType: "neutral",
-    // },
+   
   ];
 
   return (
