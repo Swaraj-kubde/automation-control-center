@@ -158,7 +158,7 @@ export function CVEvaluationSystem() {
                     <TableHead>PHONE</TableHead>
                     <TableHead>CITY</TableHead>
                     <TableHead>EMAIL</TableHead>
-                    <TableHead>DATA NASCITA</TableHead>
+                    <TableHead>D.O.B</TableHead>
                     <TableHead>EDUCATION</TableHead>
                     <TableHead>JOB HISTORY</TableHead>
                     <TableHead>SKILLS</TableHead>
