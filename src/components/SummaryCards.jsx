@@ -2,6 +2,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, UserCheck, DollarSign, Clock } from "lucide-react";
 import { useClientStats } from "@/hooks/useClientsData";
+import { useEffect, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+
+const supabase = createClient(
+ "https://lhotzltrakfnmbjsxlif.supabase.co",
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxob3R6bHRyYWtmbm1ianN4bGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNTU1MzksImV4cCI6MjA2NTYzMTUzOX0.Ao95MYjZLeFTFfZ5oDAUk1OzMwAxyvf04KxEDVDhdHc'
+);
+
+  const [clientCount, setClientCount] = useState(0);
+
+  useEffect(() => {
+    const fetchClientCount = async () => {
+      const { count, error } = await supabase
+        .from('client_onboarding_submissions')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) {
+        console.error('Error fetching count:', error);
+      } else {
+        setClientCount(count);
+      }
+    };
+
+    fetchClientCount();
+  }, []);
+
 
 export function SummaryCards() {
   const { data: summaryData, isLoading, error } = useClientStats();
@@ -38,7 +65,7 @@ export function SummaryCards() {
     },
     {
       title: "Clients Onboarded",
-      value: summaryData?.clientsOnboarded?.toString() || "0",
+      value: {clientCount} || "0",
       icon: UserCheck,
       change: "+8%",
       changeType: "positive",

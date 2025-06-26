@@ -111,7 +111,7 @@ export function ClientOnboardingData() {
                 <TableHead className="w-[200px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Contact</TableHead>
                 <TableHead className="w-[180px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Business</TableHead>
                 <TableHead className="w-[250px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Key Challenges</TableHead>
-                <TableHead className="w-[200px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Lead Handling</TableHead>
+                {/* <TableHead className="w-[200px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Lead Handling</TableHead> */}
                 <TableHead className="w-[120px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Submitted</TableHead>
                 <TableHead className="w-[100px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Status</TableHead>
                 <TableHead className="w-[100px] text-gray-900 dark:text-gray-100 hover:text-black dark:hover:text-white transition-colors duration-200">Actions</TableHead>
@@ -155,11 +155,11 @@ export function ClientOnboardingData() {
                       {truncateText(client.key_challenges, 60)}
                     </div>
                   </TableCell>
-                  <TableCell className="hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
+                  {/* <TableCell className="hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
                     <div className="text-sm text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors duration-200" title={JSON.stringify(client.lead_handlings)}>
                       {truncateText(client.lead_handlings?.description || 'No lead handling info', 50)}
                     </div>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell className="hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
                     <div className="text-sm text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors duration-200">
                       {formatDate(client.created_at)}
