@@ -27,7 +27,7 @@ export function SummaryCards() {
       const { count: thisMonthCount } = await supabase
         .from("clients")
         .select("*", { count: "exact", head: true })
-        .gte("created_at", startOfThisMonth.toISOString());
+        // .gte("created_at", startOfThisMonth.toISOString());
 
       const { count: lastMonthCount } = await supabase
         .from("clients")
