@@ -4,24 +4,20 @@ import { Users, UserCheck, DollarSign, Clock } from "lucide-react";
 import { useClientStats } from "@/hooks/useClientsData";
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import clientStats from "./useClientStats"
 
 
 
 export function SummaryCards() {
   const { data: summaryData, isLoading, error } = useClientStats();
   const [clientCount, setClientCount] = useState(0);
-  const supabase = createClient(
-    "https://lhotzltrakfnmbjsxlif.supabase.co",
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxob3R6bHRyYWtmbm1ianN4bGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNTU1MzksImV4cCI6MjA2NTYzMTUzOX0.Ao95MYjZLeFTFfZ5oDAUk1OzMwAxyvf04KxEDVDhdHc'
-  );
-  const [clientStats, setClientStats] = useState({
+  const [clientGrowth, setClientGrowth] = useState({
     thisMonth: 0,
     lastMonth: 0,
     percentChange: "0%",
     changeType: "neutral",
   });
-useEffect(() => {
+
+  useEffect(() => {
     const getClientCounts = async () => {
       const now = new Date();
       const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -57,34 +53,18 @@ useEffect(() => {
         changeType = percent > 0 ? "positive" : percent < 0 ? "negative" : "neutral";
       }
 
-      setClientStats({
+      setClientGrowth({
         thisMonth: thisMonthCount || 0,
         lastMonth: lastMonthCount || 0,
         percentChange,
         changeType,
       });
+
+      setClientCount(thisMonthCount || 0); // optional if clientCount used separately
     };
 
     getClientCounts();
   }, []);
-
-  
-  useEffect(() => {
-    const fetchClientCount = async () => {
-      const { count, error } = await supabase
-        .from('clients')
-        .select('*', { count: 'exact', head: true });
-
-      if (error) {
-        console.error('Error fetching count:', error);
-      } else {
-        setClientCount(count);
-      }
-    };
-
-    fetchClientCount();
-  }, []);
-
 
   if (isLoading) {
     return (
@@ -104,10 +84,6 @@ useEffect(() => {
     );
   }
 
-  if (error) {
-    console.error('Error in SummaryCards:', error);
-  }
-
   const summaryItems = [
     {
       title: "Total Leads This Month",
@@ -119,9 +95,9 @@ useEffect(() => {
     {
       title: "Clients Onboarded",
       value: clientCount.toString() || "0",
-       icon: UserCheck,
-      change: clientStats.percentChange,
-      changeType: clientStats.changeType,
+      icon: UserCheck,
+      change: clientGrowth.percentChange,
+      changeType: clientGrowth.changeType,
     },
     {
       title: "Payments Received",
@@ -151,12 +127,13 @@ useEffect(() => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.value}</div>
-            <p className={`text-xs ${item.changeType === "positive"
-              ? "text-green-600 dark:text-green-400"
-              : item.changeType === "negative"
+            <p className={`text-xs ${
+              item.changeType === "positive"
+                ? "text-green-600 dark:text-green-400"
+                : item.changeType === "negative"
                 ? "text-red-600 dark:text-red-400"
                 : "text-gray-600 dark:text-gray-400"
-              }`}>
+            }`}>
               {item.change} from last month
             </p>
           </CardContent>
@@ -165,3 +142,4 @@ useEffect(() => {
     </div>
   );
 }
+
