@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -153,9 +152,9 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <Card className="bg-white dark:bg-gray-800 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <Card className="bg-white dark:bg-gray-800 w-full max-w-md mx-auto max-h-[95vh] flex flex-col">
+        <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
           <CardTitle className="text-lg font-semibold dark:text-gray-100">
             {invoice && invoice.id ? "Edit Invoice" : "Add New Invoice"}
           </CardTitle>
@@ -163,7 +162,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
             <X className="w-4 h-4" />
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="client_select" className="dark:text-gray-100">Select Client (Optional)</Label>
@@ -290,7 +289,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
               />
             </div>
 
-            <div className="flex justify-between space-x-3 pt-4">
+            <div className="flex justify-between space-x-3 pt-4 sticky bottom-0 bg-white dark:bg-gray-800 pb-2">
               <Button 
                 type="button" 
                 onClick={handleCancel} 
