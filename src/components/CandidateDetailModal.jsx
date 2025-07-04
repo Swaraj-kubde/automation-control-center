@@ -1,8 +1,8 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Calendar, MapPin, Phone, GraduationCap, Briefcase, Star, FileText } from "lucide-react";
+import { Mail, Calendar, MapPin, Phone, GraduationCap, Briefcase, Star, FileText, ArrowLeft } from "lucide-react";
 
 export function CandidateDetailModal({ candidate, isOpen, onClose }) {
   if (!candidate) return null;
@@ -40,7 +40,7 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle className="text-2xl font-bold flex items-center gap-3">
             {candidate.candidate_name}
             <div className="flex gap-2">
@@ -56,6 +56,14 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
               )}
             </div>
           </DialogTitle>
+          <Button 
+            onClick={onClose}
+            variant="outline"
+            className="flex items-center gap-2 ml-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to List
+          </Button>
         </DialogHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
