@@ -1,18 +1,24 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, RefreshCw, Upload, ArrowUpDown } from "lucide-react";
+import { ExternalLink, RefreshCw, Upload, ArrowUpDown, Eye } from "lucide-react";
 import { useCVEvaluations } from "@/hooks/useCVEvaluations";
 import { useToast } from "@/hooks/use-toast";
+import { CVEvaluationFilters } from "./CVEvaluationFilters";
+import { CandidateDetailModal } from "./CandidateDetailModal";
 
 export function CVEvaluationSystem() {
   const { data: cvEvaluations = [], isLoading, refetch } = useCVEvaluations();
   const { toast } = useToast();
   const [sortField, setSortField] = useState("evaluation_date");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [considerationFilter, setConsiderationFilter] = useState("all");
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const handleUploadClick = () => {
     window.open("https://swarajevolvyn.app.n8n.cloud/form/2a87705d-8ba1-41f1-80ef-85f364ce253e", "_blank");
@@ -45,13 +51,13 @@ export function CVEvaluationSystem() {
   const getConsiderationColor = (consideration) => {
     switch (consideration?.toLowerCase()) {
       case "shortlist":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 border-green-200";
       case "rejected":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 border-red-200";
       case "under review":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -64,35 +70,72 @@ export function CVEvaluationSystem() {
     }
   };
 
-  const sortedEvaluations = [...cvEvaluations].sort((a, b) => {
-    let aValue = a[sortField];
-    let bValue = b[sortField];
+  const filteredAndSortedEvaluations = useMemo(() => {
+    let filtered = [...cvEvaluations];
 
-    if (sortField === "evaluation_date") {
-      aValue = new Date(aValue);
-      bValue = new Date(bValue);
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(evaluation => 
+        evaluation.candidate_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        evaluation.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    if (sortField === "vote") {
-      aValue = aValue || 0;
-      bValue = bValue || 0;
+    // Apply consideration filter
+    if (considerationFilter !== "all") {
+      filtered = filtered.filter(evaluation => 
+        evaluation.consideration?.toLowerCase() === considerationFilter.toLowerCase()
+      );
     }
 
-    if (typeof aValue === "string") {
-      aValue = aValue.toLowerCase();
-      bValue = bValue.toLowerCase();
-    }
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
 
-    if (sortDirection === "asc") {
-      return aValue > bValue ? 1 : -1;
-    } else {
-      return aValue < bValue ? 1 : -1;
-    }
-  });
+      if (sortField === "evaluation_date") {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      }
+
+      if (sortField === "vote") {
+        aValue = aValue || 0;
+        bValue = bValue || 0;
+      }
+
+      if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+
+      if (sortDirection === "asc") {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return filtered;
+  }, [cvEvaluations, searchTerm, considerationFilter, sortField, sortDirection]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString();
+    return new Date(dateString).toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    });
+  };
+
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return "-";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
+  const handleRowClick = (candidate) => {
+    setSelectedCandidate(candidate);
+    setIsDetailModalOpen(true);
   };
 
   return (
@@ -124,21 +167,29 @@ export function CVEvaluationSystem() {
           </Button>
         </CardHeader>
         <CardContent>
+          <CVEvaluationFilters 
+            onFilterChange={setConsiderationFilter}
+            onSearchChange={setSearchTerm}
+          />
+
           {isLoading ? (
             <div className="flex justify-center py-8">
               <div className="text-gray-500">Loading evaluations...</div>
             </div>
-          ) : cvEvaluations.length === 0 ? (
+          ) : filteredAndSortedEvaluations.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No CV evaluations found. Upload a CV to get started.
+              {cvEvaluations.length === 0 
+                ? "No CV evaluations found. Upload a CV to get started."
+                : "No candidates match your current filters."
+              }
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
+            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+              <Table className="w-full">
+                <TableHeader className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+                  <TableRow className="border-b border-gray-200 dark:border-gray-700">
                     <TableHead 
-                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide py-4"
                       onClick={() => handleSort("evaluation_date")}
                     >
                       <div className="flex items-center gap-1">
@@ -147,7 +198,7 @@ export function CVEvaluationSystem() {
                       </div>
                     </TableHead>
                     <TableHead 
-                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
                       onClick={() => handleSort("candidate_name")}
                     >
                       <div className="flex items-center gap-1">
@@ -155,16 +206,16 @@ export function CVEvaluationSystem() {
                         <ArrowUpDown className="w-3 h-3" />
                       </div>
                     </TableHead>
-                    <TableHead>PHONE</TableHead>
-                    <TableHead>CITY</TableHead>
-                    <TableHead>EMAIL</TableHead>
-                    <TableHead>D.O.B</TableHead>
-                    <TableHead>EDUCATION</TableHead>
-                    <TableHead>JOB HISTORY</TableHead>
-                    <TableHead>SKILLS</TableHead>
-                    <TableHead>SUMMARIZE</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">PHONE</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">CITY</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">EMAIL</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">D.O.B</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">EDUCATION</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">JOB HISTORY</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">SKILLS</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">SUMMARIZE</TableHead>
                     <TableHead 
-                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
                       onClick={() => handleSort("vote")}
                     >
                       <div className="flex items-center gap-1">
@@ -172,33 +223,67 @@ export function CVEvaluationSystem() {
                         <ArrowUpDown className="w-3 h-3" />
                       </div>
                     </TableHead>
-                    <TableHead>CONSIDERATION</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">CONSIDERATION</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">ACTION</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortedEvaluations.map((evaluation) => (
-                    <TableRow key={evaluation.id}>
-                      <TableCell>{formatDate(evaluation.evaluation_date)}</TableCell>
-                      <TableCell className="font-medium">{evaluation.candidate_name || "-"}</TableCell>
-                      <TableCell>{evaluation.phone || "-"}</TableCell>
-                      <TableCell>{evaluation.city || "-"}</TableCell>
-                      <TableCell>{evaluation.email || "-"}</TableCell>
-                      <TableCell>{formatDate(evaluation.date_of_birth)}</TableCell>
-                      <TableCell className="max-w-[200px] truncate" title={evaluation.education}>
-                        {evaluation.education || "-"}
+                  {filteredAndSortedEvaluations.map((evaluation, index) => (
+                    <TableRow 
+                      key={evaluation.id} 
+                      className={`
+                        border-b border-gray-100 dark:border-gray-800 
+                        hover:bg-gray-50 dark:hover:bg-gray-900 
+                        cursor-pointer transition-colors
+                        ${index % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50/50 dark:bg-gray-900/50'}
+                      `}
+                      onClick={() => handleRowClick(evaluation)}
+                    >
+                      <TableCell className="py-4 text-sm font-medium">
+                        {formatDate(evaluation.evaluation_date)}
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate" title={evaluation.job_history}>
-                        {evaluation.job_history || "-"}
+                      <TableCell className="font-semibold text-sm">
+                        {evaluation.candidate_name || "-"}
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate" title={evaluation.skills}>
-                        {evaluation.skills || "-"}
+                      <TableCell className="text-sm">{evaluation.phone || "-"}</TableCell>
+                      <TableCell className="text-sm">{evaluation.city || "-"}</TableCell>
+                      <TableCell className="text-sm">
+                        {evaluation.email ? (
+                          <a 
+                            href={`mailto:${evaluation.email}`} 
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {evaluation.email}
+                          </a>
+                        ) : (
+                          "-"
+                        )}
                       </TableCell>
-                      <TableCell className="max-w-[300px] truncate" title={evaluation.ai_summary}>
-                        {evaluation.ai_summary || "-"}
+                      <TableCell className="text-sm">{formatDate(evaluation.date_of_birth)}</TableCell>
+                      <TableCell className="max-w-[150px] text-sm">
+                        <div className="line-clamp-2" title={evaluation.education}>
+                          {truncateText(evaluation.education, 80)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="max-w-[150px] text-sm">
+                        <div className="line-clamp-2" title={evaluation.job_history}>
+                          {truncateText(evaluation.job_history, 80)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="max-w-[150px] text-sm">
+                        <div className="line-clamp-2" title={evaluation.skills}>
+                          {truncateText(evaluation.skills, 80)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="max-w-[200px] text-sm">
+                        <div className="line-clamp-2" title={evaluation.ai_summary}>
+                          {truncateText(evaluation.ai_summary, 100)}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {evaluation.vote ? (
-                          <Badge className={getVoteColor(evaluation.vote)}>
+                          <Badge className={`${getVoteColor(evaluation.vote)} font-semibold`}>
                             {evaluation.vote}/10
                           </Badge>
                         ) : (
@@ -207,12 +292,25 @@ export function CVEvaluationSystem() {
                       </TableCell>
                       <TableCell>
                         {evaluation.consideration ? (
-                          <Badge className={getConsiderationColor(evaluation.consideration)}>
+                          <Badge className={`${getConsiderationColor(evaluation.consideration)} border font-medium rounded-full px-3 py-1`}>
                             {evaluation.consideration}
                           </Badge>
                         ) : (
                           "-"
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRowClick(evaluation);
+                          }}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -222,6 +320,12 @@ export function CVEvaluationSystem() {
           )}
         </CardContent>
       </Card>
+
+      <CandidateDetailModal 
+        candidate={selectedCandidate}
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+      />
     </div>
   );
 }
