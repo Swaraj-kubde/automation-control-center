@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
     invoice_number: "",
     notes: "",
   });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (invoice) {
@@ -47,17 +49,53 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
         notes: "",
       });
     }
+    setErrors({});
   }, [invoice]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.client_name.trim()) {
+      newErrors.client_name = "Client name is required";
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    if (!formData.amount.trim()) {
+      newErrors.amount = "Amount is required";
+    } else if (isNaN(parseFloat(formData.amount)) || parseFloat(formData.amount) <= 0) {
+      newErrors.amount = "Please enter a valid amount";
+    }
+    
+    if (!formData.invoice_date) {
+      newErrors.invoice_date = "Invoice date is required";
+    }
+    
+    if (!formData.due_date) {
+      newErrors.due_date = "Due date is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     const submitData = {
       ...formData,
       amount: formData.amount ? parseFloat(formData.amount) : null,
       deal_id: formData.deal_id ? parseInt(formData.deal_id) : null,
     };
     onSubmit(submitData);
-    onClose();
   };
 
   const handleChange = (e) => {
@@ -66,6 +104,14 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
   };
 
   const handleClientSelect = (e) => {
@@ -90,6 +136,22 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
     }
   };
 
+  const handleCancel = () => {
+    setFormData({
+      deal_id: null,
+      client_name: "",
+      email: "",
+      invoice_date: new Date().toISOString().split('T')[0],
+      amount: "",
+      due_date: "",
+      status: "unpaid",
+      invoice_number: "",
+      notes: "",
+    });
+    setErrors({});
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <Card className="bg-white dark:bg-gray-800 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
@@ -97,7 +159,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
           <CardTitle className="text-lg font-semibold dark:text-gray-100">
             {invoice && invoice.id ? "Edit Invoice" : "Add New Invoice"}
           </CardTitle>
-          <Button onClick={onClose} size="sm" variant="ghost">
+          <Button onClick={handleCancel} size="sm" variant="ghost">
             <X className="w-4 h-4" />
           </Button>
         </CardHeader>
@@ -121,29 +183,29 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="client_name" className="dark:text-gray-100">Client Name</Label>
+              <Label htmlFor="client_name" className="dark:text-gray-100">Client Name *</Label>
               <Input
                 id="client_name"
                 name="client_name"
                 type="text"
                 value={formData.client_name}
                 onChange={handleChange}
-                required
-                className="dark:bg-gray-700 dark:text-gray-100"
+                className={`dark:bg-gray-700 dark:text-gray-100 ${errors.client_name ? 'border-red-500' : ''}`}
               />
+              {errors.client_name && <p className="text-red-500 text-sm">{errors.client_name}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="dark:text-gray-100">Email Address</Label>
+              <Label htmlFor="email" className="dark:text-gray-100">Email Address *</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
-                className="dark:bg-gray-700 dark:text-gray-100"
+                className={`dark:bg-gray-700 dark:text-gray-100 ${errors.email ? 'border-red-500' : ''}`}
               />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -160,7 +222,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount" className="dark:text-gray-100">Amount</Label>
+              <Label htmlFor="amount" className="dark:text-gray-100">Amount *</Label>
               <Input
                 id="amount"
                 name="amount"
@@ -169,33 +231,35 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
                 value={formData.amount}
                 onChange={handleChange}
                 placeholder="0.00"
-                className="dark:bg-gray-700 dark:text-gray-100"
+                className={`dark:bg-gray-700 dark:text-gray-100 ${errors.amount ? 'border-red-500' : ''}`}
               />
+              {errors.amount && <p className="text-red-500 text-sm">{errors.amount}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invoice_date" className="dark:text-gray-100">Invoice Date</Label>
+              <Label htmlFor="invoice_date" className="dark:text-gray-100">Invoice Date *</Label>
               <Input
                 id="invoice_date"
                 name="invoice_date"
                 type="date"
                 value={formData.invoice_date}
                 onChange={handleChange}
-                required
-                className="dark:bg-gray-700 dark:text-gray-100"
+                className={`dark:bg-gray-700 dark:text-gray-100 ${errors.invoice_date ? 'border-red-500' : ''}`}
               />
+              {errors.invoice_date && <p className="text-red-500 text-sm">{errors.invoice_date}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="due_date" className="dark:text-gray-100">Due Date</Label>
+              <Label htmlFor="due_date" className="dark:text-gray-100">Due Date *</Label>
               <Input
                 id="due_date"
                 name="due_date"
                 type="date"
                 value={formData.due_date}
                 onChange={handleChange}
-                className="dark:bg-gray-700 dark:text-gray-100"
+                className={`dark:bg-gray-700 dark:text-gray-100 ${errors.due_date ? 'border-red-500' : ''}`}
               />
+              {errors.due_date && <p className="text-red-500 text-sm">{errors.due_date}</p>}
             </div>
 
             <div className="space-y-2">
@@ -206,7 +270,6 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
                 value={formData.status}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                required
               >
                 <option value="unpaid">Unpaid</option>
                 <option value="paid">Paid</option>
@@ -227,12 +290,21 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
               />
             </div>
 
-            <div className="flex space-x-2 pt-4">
-              <Button type="submit" disabled={isLoading} className="flex-1">
-                {isLoading ? "Saving..." : (invoice && invoice.id ? "Update Invoice" : "Create Invoice")}
-              </Button>
-              <Button type="button" onClick={onClose} variant="outline" className="flex-1">
+            <div className="flex justify-between space-x-3 pt-4">
+              <Button 
+                type="button" 
+                onClick={handleCancel} 
+                variant="outline" 
+                className="flex-1 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
                 Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isLoading} 
+                className="flex-1 bg-primary hover:bg-primary/90"
+              >
+                {isLoading ? "Saving..." : (invoice && invoice.id ? "Update Invoice" : "Add Invoice")}
               </Button>
             </div>
           </form>
