@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, RefreshCw, Upload, ArrowUpDown, Eye } from "lucide-react";
+import { ExternalLink, RefreshCw, Upload, ArrowUpDown } from "lucide-react";
 import { useCVEvaluations } from "@/hooks/useCVEvaluations";
 import { useToast } from "@/hooks/use-toast";
 import { CVEvaluationFilters } from "./CVEvaluationFilters";
@@ -46,19 +46,6 @@ export function CVEvaluationSystem() {
     if (vote >= 5 && vote <= 7) return "bg-yellow-100 text-yellow-800";
     if (vote >= 8 && vote <= 10) return "bg-green-100 text-green-800";
     return "bg-gray-100 text-gray-800";
-  };
-
-  const getConsiderationColor = (consideration) => {
-    switch (consideration?.toLowerCase()) {
-      case "shortlist":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "rejected":
-        return "bg-red-100 text-red-800 border-red-200";
-      case "under review":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
   };
 
   const handleSort = (field) => {
@@ -127,12 +114,6 @@ export function CVEvaluationSystem() {
     });
   };
 
-  const truncateText = (text, maxLength = 100) => {
-    if (!text) return "-";
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
-
   const handleRowClick = (candidate) => {
     setSelectedCandidate(candidate);
     setIsDetailModalOpen(true);
@@ -184,21 +165,12 @@ export function CVEvaluationSystem() {
               }
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
               <Table className="w-full">
-                <TableHeader className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+                <TableHeader className="bg-gray-50 dark:bg-gray-800">
                   <TableRow className="border-b border-gray-200 dark:border-gray-700">
                     <TableHead 
                       className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide py-4"
-                      onClick={() => handleSort("evaluation_date")}
-                    >
-                      <div className="flex items-center gap-1">
-                        DATE
-                        <ArrowUpDown className="w-3 h-3" />
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
                       onClick={() => handleSort("candidate_name")}
                     >
                       <div className="flex items-center gap-1">
@@ -206,25 +178,26 @@ export function CVEvaluationSystem() {
                         <ArrowUpDown className="w-3 h-3" />
                       </div>
                     </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">PHONE</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">CITY</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">EMAIL</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">D.O.B</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">EDUCATION</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">JOB HISTORY</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">SKILLS</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">SUMMARIZE</TableHead>
                     <TableHead 
                       className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
                       onClick={() => handleSort("vote")}
                     >
                       <div className="flex items-center gap-1">
-                        VOTE
+                        SCORE
                         <ArrowUpDown className="w-3 h-3" />
                       </div>
                     </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">CONSIDERATION</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">ACTION</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">EMAIL</TableHead>
+                    <TableHead className="font-semibold text-xs uppercase tracking-wide">CITY</TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
+                      onClick={() => handleSort("evaluation_date")}
+                    >
+                      <div className="flex items-center gap-1">
+                        DATE
+                        <ArrowUpDown className="w-3 h-3" />
+                      </div>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -239,14 +212,18 @@ export function CVEvaluationSystem() {
                       `}
                       onClick={() => handleRowClick(evaluation)}
                     >
-                      <TableCell className="py-4 text-sm font-medium">
-                        {formatDate(evaluation.evaluation_date)}
-                      </TableCell>
-                      <TableCell className="font-semibold text-sm">
+                      <TableCell className="py-4 font-semibold text-sm">
                         {evaluation.candidate_name || "-"}
                       </TableCell>
-                      <TableCell className="text-sm">{evaluation.phone || "-"}</TableCell>
-                      <TableCell className="text-sm">{evaluation.city || "-"}</TableCell>
+                      <TableCell>
+                        {evaluation.vote ? (
+                          <Badge className={`${getVoteColor(evaluation.vote)} font-semibold`}>
+                            {evaluation.vote}/10
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-500">-</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm">
                         {evaluation.email ? (
                           <a 
@@ -257,60 +234,14 @@ export function CVEvaluationSystem() {
                             {evaluation.email}
                           </a>
                         ) : (
-                          "-"
+                          <span className="text-gray-500">-</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-sm">{formatDate(evaluation.date_of_birth)}</TableCell>
-                      <TableCell className="max-w-[150px] text-sm">
-                        <div className="line-clamp-2" title={evaluation.education}>
-                          {truncateText(evaluation.education, 80)}
-                        </div>
+                      <TableCell className="text-sm">
+                        {evaluation.city || "-"}
                       </TableCell>
-                      <TableCell className="max-w-[150px] text-sm">
-                        <div className="line-clamp-2" title={evaluation.job_history}>
-                          {truncateText(evaluation.job_history, 80)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-[150px] text-sm">
-                        <div className="line-clamp-2" title={evaluation.skills}>
-                          {truncateText(evaluation.skills, 80)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-[200px] text-sm">
-                        <div className="line-clamp-2" title={evaluation.ai_summary}>
-                          {truncateText(evaluation.ai_summary, 100)}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {evaluation.vote ? (
-                          <Badge className={`${getVoteColor(evaluation.vote)} font-semibold`}>
-                            {evaluation.vote}/10
-                          </Badge>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {evaluation.consideration ? (
-                          <Badge className={`${getConsiderationColor(evaluation.consideration)} border font-medium rounded-full px-3 py-1`}>
-                            {evaluation.consideration}
-                          </Badge>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRowClick(evaluation);
-                          }}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
+                      <TableCell className="text-sm font-medium">
+                        {formatDate(evaluation.evaluation_date)}
                       </TableCell>
                     </TableRow>
                   ))}
