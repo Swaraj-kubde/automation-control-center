@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mail, Calendar, MapPin, Phone, GraduationCap, Briefcase, Star, FileText, ArrowLeft, X } from "lucide-react";
 import { useEffect } from "react";
-
+import "./Candidate.css"
 export function CandidateDetailModal({ candidate, isOpen, onClose }) {
   // Handle Esc key press
   useEffect(() => {
@@ -56,7 +56,7 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
       case "under review":
         return "bg-yellow-100 text-yellow-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-white text-gray-800";
     }
   };
 
@@ -69,11 +69,15 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl w-[90vw] max-h-[90vh] h-[90vh] p-0 overflow-hidden flex flex-col m-auto box-border">
+    <DialogContent className="
+  w-[90vw] max-w-[768px] 
+  max-h-[70vh] 
+  h-auto md:h-[70vh] 
+  p-0 overflow-hidden flex flex-col m-auto box-border">
         {/* Fixed Header - Always visible */}
-        <DialogHeader className="flex flex-row items-center justify-between p-4 pb-3 border-b bg-white dark:bg-gray-950 flex-shrink-0 min-h-0">
+        <DialogHeader className="flex flex-row items-center justify-between p-4 pb-3 border-b bg-white dark:bg-gray-950 flex-shrink-0 Dheader">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <Button 
+            {/* <Button 
               onClick={onClose}
               variant="outline"
               size="sm"
@@ -81,9 +85,9 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
             >
               <ArrowLeft className="w-4 h-4" />
               Back to List
-            </Button>
+            </Button> */}
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
+              <DialogTitle className="text-lg font-bold  text-gray-900 dark:text-gray-100 truncate">
                 {candidate.candidate_name}
               </DialogTitle>
               <div className="flex gap-2 mt-1 flex-wrap">
@@ -93,27 +97,27 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
                   </Badge>
                 )}
                 {candidate.consideration && (
-                  <Badge className={`${getConsiderationColor(candidate.consideration)} flex-shrink-0 text-xs`}>
+                  <Badge className={`${getConsiderationColor(candidate.consideration)} flex-shrink-0  text-sm consideration `}>
                     {candidate.consideration}
                   </Badge>
                 )}
               </div>
             </div>
           </div>
-          <Button 
+          {/* <Button 
             onClick={onClose}
             variant="ghost"
             size="sm"
             className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 flex-shrink-0"
           >
             <X className="w-4 h-4" />
-          </Button>
+          </Button> */}
         </DialogHeader>
 
         {/* Scrollable Content Area - Takes remaining space */}
         <div className="flex-1 overflow-hidden min-h-0">
           <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4 Scroller">
               {/* Contact Information */}
               <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
                 <CardHeader className="pb-2">

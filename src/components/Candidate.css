@@ -1,0 +1,13 @@
+.Dheader{
+    background-color: rgb(156, 40, 59);
+    height: 25vh;
+    /* padding: 100px; */
+  }
+  .Scroller{
+    /* background-color: pink; */
+    height: 73vh;
+  }
+  .consideration{
+    font-size: 40px;
+    background-color: #fff;
+  }
