@@ -45,8 +45,8 @@ export function AppSidebar({ activeView, setActiveView }: AppSidebarProps) {
     <Sidebar>
       <SidebarHeader className="p-6">
         <div className="flex items-center space-x-2">
-          <img src="/lovable-uploads/d6817b98-b0d8-4817-bde6-b847a3619739.png" alt="CoslynAI Logo" className="w-8 h-8" />
-          <span className="text-xl font-bold text-gray-900">CoslynAI</span>
+          <BarChart3 className="w-8 h-8 text-blue-600" />
+          <span className="text-xl font-bold text-gray-900">EvolvynAI</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
