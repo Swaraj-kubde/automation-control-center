@@ -5,8 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mail, Calendar, MapPin, Phone, GraduationCap, Briefcase, Star, FileText, ArrowLeft, X } from "lucide-react";
-import { useEffect } from "react";
-import "./Candidate.css"
+import "../../src/styles/candidateDetailModal.css";
 export function CandidateDetailModal({ candidate, isOpen, onClose }) {
   // Handle Esc key press
   useEffect(() => {
