@@ -69,10 +69,10 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-[95vw] h-[90vh] max-h-[90vh] p-0 overflow-hidden flex flex-col m-4">
+      <DialogContent className="max-w-3xl w-[90vw] max-h-[90vh] h-[90vh] p-0 overflow-hidden flex flex-col m-auto box-border">
         {/* Fixed Header - Always visible */}
-        <DialogHeader className="flex flex-row items-center justify-between p-6 pb-4 border-b bg-white dark:bg-gray-950 flex-shrink-0 min-h-0">
-          <div className="flex items-center gap-4 min-w-0 flex-1">
+        <DialogHeader className="flex flex-row items-center justify-between p-4 pb-3 border-b bg-white dark:bg-gray-950 flex-shrink-0 min-h-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <Button 
               onClick={onClose}
               variant="outline"
@@ -83,17 +83,17 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
               Back to List
             </Button>
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
+              <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
                 {candidate.candidate_name}
               </DialogTitle>
-              <div className="flex gap-2 mt-2 flex-wrap">
+              <div className="flex gap-2 mt-1 flex-wrap">
                 {candidate.vote && (
-                  <Badge className={`${getVoteColor(candidate.vote)} font-semibold flex-shrink-0`}>
+                  <Badge className={`${getVoteColor(candidate.vote)} font-semibold flex-shrink-0 text-xs`}>
                     {candidate.vote}/10
                   </Badge>
                 )}
                 {candidate.consideration && (
-                  <Badge className={`${getConsiderationColor(candidate.consideration)} flex-shrink-0`}>
+                  <Badge className={`${getConsiderationColor(candidate.consideration)} flex-shrink-0 text-xs`}>
                     {candidate.consideration}
                   </Badge>
                 )}
@@ -111,52 +111,52 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
         </DialogHeader>
 
         {/* Scrollable Content Area - Takes remaining space */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden min-h-0">
           <ScrollArea className="h-full">
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-4">
               {/* Contact Information */}
               <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                    <Phone className="w-5 h-5 text-blue-600" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Phone className="w-4 h-4 text-blue-600" />
                     Contact Information
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       {candidate.email ? (
                         <a 
                           href={`mailto:${candidate.email}`} 
-                          className="text-blue-600 hover:text-blue-800 hover:underline break-all transition-colors"
+                          className="text-blue-600 hover:text-blue-800 hover:underline break-all transition-colors text-sm"
                         >
                           {candidate.email}
                         </a>
                       ) : (
-                        <span className="text-gray-500">No email provided</span>
+                        <span className="text-gray-500 text-sm">No email provided</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       {candidate.phone ? (
                         <a 
                           href={`tel:${candidate.phone}`} 
-                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors text-sm"
                         >
                           {candidate.phone}
                         </a>
                       ) : (
-                        <span className="text-gray-500">No phone provided</span>
+                        <span className="text-gray-500 text-sm">No phone provided</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                      <span className="text-gray-700 dark:text-gray-300">{candidate.city || "Location not specified"}</span>
+                      <span className="text-gray-700 dark:text-gray-300 text-sm">{candidate.city || "Location not specified"}</span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                      <span className="text-gray-700 dark:text-gray-300">DOB: {formatDate(candidate.date_of_birth)}</span>
+                      <span className="text-gray-700 dark:text-gray-300 text-sm">DOB: {formatDate(candidate.date_of_birth)}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -164,35 +164,35 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
 
               {/* Evaluation Details */}
               <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                    <Star className="w-5 h-5 text-yellow-600" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Star className="w-4 h-4 text-yellow-600" />
                     Evaluation Details
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="flex items-center gap-3">
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       <div>
-                        <div className="text-sm text-gray-500">Evaluated On</div>
-                        <div className="font-medium text-gray-700 dark:text-gray-300">{formatDate(candidate.evaluation_date)}</div>
+                        <div className="text-xs text-gray-500">Evaluated On</div>
+                        <div className="font-medium text-gray-700 dark:text-gray-300 text-sm">{formatDate(candidate.evaluation_date)}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <Star className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       <div>
-                        <div className="text-sm text-gray-500">Score</div>
-                        <div className="font-medium text-gray-700 dark:text-gray-300">
+                        <div className="text-xs text-gray-500">Score</div>
+                        <div className="font-medium text-gray-700 dark:text-gray-300 text-sm">
                           {candidate.vote ? `${candidate.vote}/10` : "Not scored"}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       <div>
-                        <div className="text-sm text-gray-500">Status</div>
-                        <div className="font-medium text-gray-700 dark:text-gray-300">{candidate.consideration || "Under review"}</div>
+                        <div className="text-xs text-gray-500">Status</div>
+                        <div className="font-medium text-gray-700 dark:text-gray-300 text-sm">{candidate.consideration || "Under review"}</div>
                       </div>
                     </div>
                   </div>
@@ -201,20 +201,20 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
 
               {/* Education */}
               <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                    <GraduationCap className="w-5 h-5 text-purple-600" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <GraduationCap className="w-4 h-4 text-purple-600" />
                     Education
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none">
                     {candidate.education ? (
-                      <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
+                      <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
                         {candidate.education}
                       </p>
                     ) : (
-                      <p className="text-gray-500 italic">No education information provided.</p>
+                      <p className="text-gray-500 italic text-sm">No education information provided.</p>
                     )}
                   </div>
                 </CardContent>
@@ -222,20 +222,20 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
 
               {/* Job History */}
               <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                    <Briefcase className="w-5 h-5 text-green-600" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Briefcase className="w-4 h-4 text-green-600" />
                     Job History
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none">
                     {candidate.job_history ? (
-                      <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
+                      <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
                         {candidate.job_history}
                       </p>
                     ) : (
-                      <p className="text-gray-500 italic">No job history information provided.</p>
+                      <p className="text-gray-500 italic text-sm">No job history information provided.</p>
                     )}
                   </div>
                 </CardContent>
@@ -243,21 +243,21 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
 
               {/* Skills */}
               <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                    <Star className="w-5 h-5 text-orange-600" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <Star className="w-4 h-4 text-orange-600" />
                     Skills
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {candidate.skills ? (
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap gap-2">
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap gap-1">
                         {formatSkills(candidate.skills).map((skill, index) => (
                           <Badge 
                             key={index} 
                             variant="outline" 
-                            className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 transition-colors"
+                            className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 transition-colors text-xs"
                           >
                             {skill}
                           </Badge>
@@ -265,41 +265,41 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
                       </div>
                       {formatSkills(candidate.skills).length === 0 && (
                         <div className="prose prose-sm max-w-none">
-                          <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
+                          <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
                             {candidate.skills}
                           </p>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <p className="text-gray-500 italic">No skills information provided.</p>
+                    <p className="text-gray-500 italic text-sm">No skills information provided.</p>
                   )}
                 </CardContent>
               </Card>
 
               {/* AI Summary */}
               <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                    <FileText className="w-5 h-5 text-indigo-600" />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 dark:text-gray-100">
+                    <FileText className="w-4 h-4 text-indigo-600" />
                     AI Summary
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none">
                     {candidate.ai_summary ? (
-                      <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
+                      <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
                         {candidate.ai_summary}
                       </p>
                     ) : (
-                      <p className="text-gray-500 italic">No AI summary available.</p>
+                      <p className="text-gray-500 italic text-sm">No AI summary available.</p>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
               {/* Extra padding at bottom for better scroll experience */}
-              <div className="h-6"></div>
+              <div className="h-4"></div>
             </div>
           </ScrollArea>
         </div>
