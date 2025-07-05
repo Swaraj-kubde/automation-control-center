@@ -69,7 +69,7 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl h-[85vh] p-0 overflow-hidden flex flex-col">
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
         {/* Fixed Header */}
         <DialogHeader className="flex flex-row items-center justify-between p-6 pb-4 border-b bg-white dark:bg-gray-950 flex-shrink-0">
           <div className="flex items-center gap-4">
@@ -110,8 +110,8 @@ export function CandidateDetailModal({ candidate, isOpen, onClose }) {
           </Button>
         </DialogHeader>
 
-        {/* Scrollable Content */}
-        <ScrollArea className="flex-1">
+        {/* Scrollable Content - Fixed height to ensure it fits in viewport */}
+        <ScrollArea className="flex-1 max-h-[calc(90vh-140px)]">
           <div className="p-6 space-y-6">
             {/* Contact Information */}
             <Card className="shadow-sm border border-gray-200 dark:border-gray-700">
