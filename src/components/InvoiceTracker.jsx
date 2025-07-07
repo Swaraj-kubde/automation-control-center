@@ -1,22 +1,26 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
 
 // Fetch invoices from API
 const fetchInvoices = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/invoices`);
-    if (!response.ok) throw new Error('Failed to fetch invoices');
+    if (!response.ok) throw new Error("Failed to fetch invoices");
     return await response.json();
   } catch (error) {
-    console.error('Error fetching invoices:', error);
+    console.error("Error fetching invoices:", error);
     // Fallback data for development
     return [
+      // this below is just sample data for development purposes
+      // remove this when the API is ready, backend should provide real data
+      // and this will be replaced by the API response
+
       {
         id: 1,
         client_name: "Acme Corp",
@@ -52,21 +56,24 @@ const fetchInvoices = async () => {
 // Update invoice status
 const updateInvoiceStatus = async ({ invoiceId, status }) => {
   const response = await fetch(`${API_BASE_URL}/invoices/${invoiceId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status }),
   });
-  if (!response.ok) throw new Error('Failed to update invoice');
+  if (!response.ok) throw new Error("Failed to update invoice");
   return response.json();
 };
 
 // Send follow-up email
 const sendFollowUpEmail = async (invoiceId) => {
-  const response = await fetch(`${API_BASE_URL}/invoices/${invoiceId}/follow-up`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  });
-  if (!response.ok) throw new Error('Failed to send follow-up');
+  const response = await fetch(
+    `${API_BASE_URL}/invoices/${invoiceId}/follow-up`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+  if (!response.ok) throw new Error("Failed to send follow-up");
   return response.json();
 };
 
@@ -74,21 +81,21 @@ export function InvoiceTracker() {
   const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading } = useQuery({
-    queryKey: ['invoices'],
+    queryKey: ["invoices"],
     queryFn: fetchInvoices,
   });
 
   const markPaidMutation = useMutation({
     mutationFn: updateInvoiceStatus,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
     },
   });
 
   const followUpMutation = useMutation({
     mutationFn: sendFollowUpEmail,
     onSuccess: () => {
-      console.log('Follow-up email sent successfully');
+      console.log("Follow-up email sent successfully");
     },
   });
 
@@ -102,9 +109,9 @@ export function InvoiceTracker() {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -116,12 +123,17 @@ export function InvoiceTracker() {
     return (
       <Card className="bg-white dark:bg-gray-800">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold dark:text-gray-100">Smart Invoice Tracker</CardTitle>
+          <CardTitle className="text-lg font-semibold dark:text-gray-100">
+            Smart Invoice Tracker
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div
+                key={index}
+                className="h-16 bg-gray-200 dark:bg-gray-700 rounded"
+              ></div>
             ))}
           </div>
         </CardContent>
@@ -132,40 +144,64 @@ export function InvoiceTracker() {
   return (
     <Card className="bg-white dark:bg-gray-800">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold dark:text-gray-100">Smart Invoice Tracker</CardTitle>
+        <CardTitle className="text-lg font-semibold dark:text-gray-100">
+          Smart Invoice Tracker
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b dark:border-gray-700">
-                <th className="text-left p-3 font-medium dark:text-gray-100">Client</th>
-                <th className="text-left p-3 font-medium dark:text-gray-100">Amount</th>
-                <th className="text-left p-3 font-medium dark:text-gray-100">Due Date</th>
-                <th className="text-left p-3 font-medium dark:text-gray-100">Status</th>
-                <th className="text-left p-3 font-medium dark:text-gray-100">Actions</th>
+                <th className="text-left p-3 font-medium dark:text-gray-100">
+                  Client
+                </th>
+                <th className="text-left p-3 font-medium dark:text-gray-100">
+                  Amount
+                </th>
+                <th className="text-left p-3 font-medium dark:text-gray-100">
+                  Due Date
+                </th>
+                <th className="text-left p-3 font-medium dark:text-gray-100">
+                  Status
+                </th>
+                <th className="text-left p-3 font-medium dark:text-gray-100">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {invoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="p-3 font-medium dark:text-gray-100">{invoice.client_name}</td>
-                  <td className="p-3 dark:text-gray-100">{formatCurrency(invoice.amount)}</td>
+                <tr
+                  key={invoice.id}
+                  className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  <td className="p-3 font-medium dark:text-gray-100">
+                    {invoice.client_name}
+                  </td>
+                  <td className="p-3 dark:text-gray-100">
+                    {formatCurrency(invoice.amount)}
+                  </td>
                   <td className="p-3">
-                    <span className={`${
-                      isOverdue(invoice.due_date) && invoice.status === "Unpaid" 
-                        ? "text-red-600 dark:text-red-400" 
-                        : "dark:text-gray-100"
-                    }`}>
+                    <span
+                      className={`${
+                        isOverdue(invoice.due_date) &&
+                        invoice.status === "Unpaid"
+                          ? "text-red-600 dark:text-red-400"
+                          : "dark:text-gray-100"
+                      }`}
+                    >
                       {invoice.due_date}
                     </span>
                   </td>
                   <td className="p-3">
-                    <Badge className={
-                      invoice.status === "Paid" 
-                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" 
-                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-                    }>
+                    <Badge
+                      className={
+                        invoice.status === "Paid"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                          : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                      }
+                    >
                       {invoice.status}
                     </Badge>
                   </td>
@@ -173,21 +209,25 @@ export function InvoiceTracker() {
                     <div className="flex space-x-2">
                       {invoice.status === "Unpaid" && (
                         <>
-                          <Button 
+                          <Button
                             onClick={() => markAsPaid(invoice.id)}
                             size="sm"
                             variant="outline"
                             disabled={markPaidMutation.isPending}
                           >
-                            {markPaidMutation.isPending ? 'Updating...' : 'Mark Paid'}
+                            {markPaidMutation.isPending
+                              ? "Updating..."
+                              : "Mark Paid"}
                           </Button>
-                          <Button 
+                          <Button
                             onClick={() => sendFollowUp(invoice.id)}
                             size="sm"
                             variant="outline"
                             disabled={followUpMutation.isPending}
                           >
-                            {followUpMutation.isPending ? 'Sending...' : 'Send Follow-up'}
+                            {followUpMutation.isPending
+                              ? "Sending..."
+                              : "Send Follow-up"}
                           </Button>
                         </>
                       )}
