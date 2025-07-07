@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 import { useClientsData } from "@/hooks/useClientsData";
+import  "../styles/inovicedeco.css" // Ensure to import your custom styles for the invoicer
 
 export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
   const { data: clients = [] } = useClientsData();
@@ -92,7 +93,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <Card className="bg-white dark:bg-gray-800 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <Card className="bg-white dark:bg-gray-800 invoicer overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold dark:text-gray-100">
             {invoice && invoice.id ? "Edit Invoice" : "Add New Invoice"}
