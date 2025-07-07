@@ -12,6 +12,7 @@ import  "../styles/inovicedeco.css" // Ensure to import your custom styles for t
 export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
   const { data: clients = [] } = useClientsData();
   const { toast } = useToast();
+  const [selectedClientId, setSelectedClientId] = useState("");
   const [formData, setFormData] = useState({
     deal_id: null,
     client_name: "",
@@ -37,6 +38,10 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
         invoice_number: invoice.invoice_number || "",
         notes: invoice.notes || "",
       });
+      // Set selected client ID for editing
+      if (invoice.deal_id || invoice.client_id) {
+        setSelectedClientId((invoice.deal_id || invoice.client_id).toString());
+      }
     } else {
       // Reset form for new invoice
       setFormData({
@@ -50,6 +55,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
         invoice_number: "",
         notes: "",
       });
+      setSelectedClientId("");
     }
   }, [invoice]);
 
@@ -84,13 +90,24 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const submitData = {
         ...formData,
         amount: formData.amount ? parseFloat(formData.amount) : null,
         deal_id: formData.deal_id ? parseInt(formData.deal_id) : null,
-        // Only include due_date if it's not empty
-        due_date: formData.due_date || null,
+        // Set due_date to null if empty to avoid date format errors
+        due_date: formData.due_date ? formData.due_date : null,
       };
 
       console.log('Submitting invoice data:', submitData);
@@ -107,7 +124,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
       console.error('Error submitting invoice:', error);
       toast({
         title: "Error",
-        description: "Failed to save invoice. Please try again.",
+        description: "Failed to save invoice. Please check all fields and try again.",
         variant: "destructive",
       });
     }
@@ -123,17 +140,22 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
 
   const handleClientSelect = (e) => {
     const clientId = e.target.value;
+    setSelectedClientId(clientId);
+    
     if (clientId) {
       const selectedClient = clients.find(c => c.client_id.toString() === clientId);
       if (selectedClient) {
+        console.log('Selected client:', selectedClient);
+        // Update form data immediately with client information
         setFormData(prev => ({
           ...prev,
           deal_id: selectedClient.client_id,
-          client_name: selectedClient.client_name,
+          client_name: selectedClient.client_name || "",
           email: selectedClient.email_address || "",
         }));
       }
     } else {
+      // Clear client-related fields when no client is selected
       setFormData(prev => ({
         ...prev,
         deal_id: null,
@@ -161,7 +183,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
               <select
                 id="client_select"
                 onChange={handleClientSelect}
-                value={formData.deal_id || ""}
+                value={selectedClientId}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
               >
                 <option value="">-- Select Client --</option>
