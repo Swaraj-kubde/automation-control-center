@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,10 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 import { useClientsData } from "@/hooks/useClientsData";
+import { useToast } from "@/hooks/use-toast";
 import  "../styles/inovicedeco.css" // Ensure to import your custom styles for the invoicer
 
 export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
   const { data: clients = [] } = useClientsData();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     deal_id: null,
     client_name: "",
@@ -50,15 +53,64 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
     }
   }, [invoice]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const submitData = {
-      ...formData,
-      amount: formData.amount ? parseFloat(formData.amount) : null,
-      deal_id: formData.deal_id ? parseInt(formData.deal_id) : null,
-    };
-    onSubmit(submitData);
-    onClose();
+    
+    // Validate required fields
+    if (!formData.client_name.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Client name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Email is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.invoice_date) {
+      toast({
+        title: "Validation Error",
+        description: "Invoice date is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const submitData = {
+        ...formData,
+        amount: formData.amount ? parseFloat(formData.amount) : null,
+        deal_id: formData.deal_id ? parseInt(formData.deal_id) : null,
+        // Only include due_date if it's not empty
+        due_date: formData.due_date || null,
+      };
+
+      console.log('Submitting invoice data:', submitData);
+      
+      await onSubmit(submitData);
+      
+      toast({
+        title: "Success",
+        description: invoice && invoice.id ? "Invoice updated successfully!" : "Invoice created successfully!",
+      });
+      
+      onClose();
+    } catch (error) {
+      console.error('Error submitting invoice:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save invoice. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleChange = (e) => {
@@ -122,7 +174,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="client_name" className="dark:text-gray-100">Client Name</Label>
+              <Label htmlFor="client_name" className="dark:text-gray-100">Client Name *</Label>
               <Input
                 id="client_name"
                 name="client_name"
@@ -135,7 +187,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="dark:text-gray-100">Email Address</Label>
+              <Label htmlFor="email" className="dark:text-gray-100">Email Address *</Label>
               <Input
                 id="email"
                 name="email"
@@ -175,7 +227,7 @@ export function InvoiceForm({ invoice, onSubmit, onClose, isLoading }) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="invoice_date" className="dark:text-gray-100">Invoice Date</Label>
+              <Label htmlFor="invoice_date" className="dark:text-gray-100">Invoice Date *</Label>
               <Input
                 id="invoice_date"
                 name="invoice_date"

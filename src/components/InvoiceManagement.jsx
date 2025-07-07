@@ -7,6 +7,7 @@ import { InvoiceForm } from "./InvoiceForm";
 import { FollowUpForm } from "./FollowUpForm";
 import { InvoiceSearchDialog } from "./InvoiceSearchDialog";
 import { ClientSearchDialog } from "./ClientSearchDialog";
+import { useToast } from "@/hooks/use-toast";
 import { 
   useInvoicesData, 
   useFollowUpsData, 
@@ -17,6 +18,7 @@ import {
 } from "@/hooks/useInvoicesData";
 
 export function InvoiceManagement() {
+  const { toast } = useToast();
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
   const [showFollowUpForm, setShowFollowUpForm] = useState(false);
   const [showInvoiceSearch, setShowInvoiceSearch] = useState(false);
@@ -64,18 +66,74 @@ export function InvoiceManagement() {
     setShowClientSearch(false);
   };
 
-  const handleCreateInvoice = (data) => {
-    // Generate invoice number if not provided
-    const invoiceData = {
-      ...data,
-      invoice_number: data.invoice_number || `INV-${Date.now()}`,
-      deal_id: data.client_id || data.deal_id || null
-    };
-    createInvoiceMutation.mutate(invoiceData);
+  const handleCreateInvoice = async (data) => {
+    try {
+      // Generate invoice number if not provided
+      const invoiceData = {
+        ...data,
+        invoice_number: data.invoice_number || `INV-${Date.now()}`,
+        deal_id: data.client_id || data.deal_id || null
+      };
+      
+      console.log('Creating invoice with data:', invoiceData);
+      
+      await createInvoiceMutation.mutateAsync(invoiceData);
+      
+      console.log('Invoice created successfully');
+      
+      toast({
+        title: "Success",
+        description: "Invoice created successfully!",
+      });
+      
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create invoice. Please check all fields and try again.",
+        variant: "destructive",
+      });
+      throw error; // Re-throw to let the form handle it
+    }
   };
 
-  const handleUpdateInvoice = (data) => {
-    updateInvoiceMutation.mutate({ id: editingInvoice.id, ...data });
+  const handleUpdateInvoice = async (data) => {
+    try {
+      await updateInvoiceMutation.mutateAsync({ id: editingInvoice.id, ...data });
+      
+      toast({
+        title: "Success",
+        description: "Invoice updated successfully!",
+      });
+      
+    } catch (error) {
+      console.error('Error updating invoice:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update invoice. Please try again.",
+        variant: "destructive",
+      });
+      throw error; // Re-throw to let the form handle it
+    }
+  };
+
+  const handleDeleteInvoice = async (id) => {
+    try {
+      await deleteInvoiceMutation.mutateAsync(id);
+      
+      toast({
+        title: "Success",
+        description: "Invoice deleted successfully!",
+      });
+      
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete invoice. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatCurrency = (amount) => {
@@ -157,14 +215,6 @@ export function InvoiceManagement() {
               <Users className="w-4 h-4 mr-2" />
               Search Client
             </Button>
-            {/* <Button 
-              onClick={() => setShowInvoiceSearch(true)} 
-              size="sm"
-              variant="outline"
-            >
-              <Search className="w-4 h-4 mr-2" />
-              Search Invoice
-            </Button> */}
             <Button onClick={() => setShowInvoiceForm(true)} size="sm">
               <Plus className="w-4 h-4 mr-2" />
               Add Invoice
@@ -206,7 +256,7 @@ export function InvoiceManagement() {
                           <Edit className="w-3 h-3" />
                         </Button>
                         <Button 
-                          onClick={() => deleteInvoiceMutation.mutate(invoice.id)}
+                          onClick={() => handleDeleteInvoice(invoice.id)}
                           size="sm"
                           variant="outline"
                           disabled={deleteInvoiceMutation.isPending}
@@ -295,9 +345,9 @@ export function InvoiceManagement() {
           invoice={editingInvoice}
           onSubmit={(data) => {
             if (editingInvoice && editingInvoice.id) {
-              handleUpdateInvoice(data);
+              return handleUpdateInvoice(data);
             } else {
-              handleCreateInvoice(data);
+              return handleCreateInvoice(data);
             }
           }}
           onClose={() => {
