@@ -21,7 +21,7 @@ export function CVEvaluationSystem() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const handleUploadClick = () => {
-    window.open("https://swarajevolvyn.app.n8n.cloud/form/2a87705d-8ba1-41f1-80ef-85f364ce253e", "_blank");
+    window.open("https://aicoslyn.app.n8n.cloud/form/2a87705d-8ba1-41f1-80ef-85f364ce253e", "_blank");
   };
 
   const handleRefresh = async () => {
