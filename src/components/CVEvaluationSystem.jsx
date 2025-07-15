@@ -160,10 +160,10 @@ export function CVEvaluationSystem() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
             <Upload className="w-5 h-5" />
             AI CV Evaluation System
           </CardTitle>
@@ -172,7 +172,7 @@ export function CVEvaluationSystem() {
           <div className="text-sm text-gray-600 dark:text-gray-400">
             Submit a candidate's CV and job description to evaluate them using AI. The system will automatically score and store the results.
           </div>
-          <Button onClick={handleUploadClick} className="flex items-center gap-2">
+          <Button onClick={handleUploadClick} className="flex items-center gap-2 w-full md:w-auto">
             <ExternalLink className="w-4 h-4" />
             Upload CV / Resume
           </Button>
@@ -180,14 +180,14 @@ export function CVEvaluationSystem() {
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Candidate Evaluation Results</CardTitle>
-          <Button onClick={handleRefresh} variant="outline" size="sm" className="flex items-center gap-2">
+        <CardHeader className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0">
+          <CardTitle className="text-lg md:text-xl">Candidate Evaluation Results</CardTitle>
+          <Button onClick={handleRefresh} variant="outline" size="sm" className="flex items-center gap-2 w-full md:w-auto">
             <RefreshCw className="w-4 h-4" />
             Refresh
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <CVEvaluationFilters 
             onFilterChange={setConsiderationFilter}
             onSearchChange={setSearchTerm}
@@ -205,89 +205,151 @@ export function CVEvaluationSystem() {
               }
             </div>
           ) : (
-            <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-              <Table className="w-full">
-                <TableHeader className="bg-gray-50 dark:bg-gray-800">
-                  <TableRow className="border-b border-gray-200 dark:border-gray-700">
-                    <TableHead 
-                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide py-4"
-                      onClick={() => handleSort("candidate_name")}
-                    >
-                      <div className="flex items-center gap-1">
-                        NAME
-                        <ArrowUpDown className="w-3 h-3" />
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
-                      onClick={() => handleSort("vote")}
-                    >
-                      <div className="flex items-center gap-1">
-                        SCORE
-                        <ArrowUpDown className="w-3 h-3" />
-                      </div>
-                    </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">EMAIL</TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wide">CITY</TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
-                      onClick={() => handleSort("evaluation_date")}
-                    >
-                      <div className="flex items-center gap-1">
-                        DATE
-                        <ArrowUpDown className="w-3 h-3" />
-                      </div>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAndSortedEvaluations.map((evaluation, index) => (
-                    <TableRow 
-                      key={evaluation.id} 
-                      className={`
-                        border-b border-gray-100 dark:border-gray-800 
-                        hover:bg-gray-50 dark:hover:bg-gray-900 
-                        cursor-pointer transition-colors
-                        ${index % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50/50 dark:bg-gray-900/50'}
-                      `}
-                      onClick={() => handleRowClick(evaluation)}
-                    >
-                      <TableCell className="py-4 font-semibold text-sm">
-                        {evaluation.candidate_name || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {evaluation.vote ? (
-                          <Badge className={`${getVoteColor(evaluation.vote)} font-semibold`}>
-                            {evaluation.vote}/10
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-500">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {evaluation.email ? (
-                          <a 
-                            href={`mailto:${evaluation.email}`} 
-                            className="text-blue-600 hover:text-blue-800 hover:underline"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {evaluation.email}
-                          </a>
-                        ) : (
-                          <span className="text-gray-500">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {evaluation.city || "-"}
-                      </TableCell>
-                      <TableCell className="text-sm font-medium">
-                        {formatDate(evaluation.evaluation_date)}
-                      </TableCell>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+                <Table className="w-full">
+                  <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                    <TableRow className="border-b border-gray-200 dark:border-gray-700">
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide py-4"
+                        onClick={() => handleSort("candidate_name")}
+                      >
+                        <div className="flex items-center gap-1">
+                          NAME
+                          <ArrowUpDown className="w-3 h-3" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
+                        onClick={() => handleSort("vote")}
+                      >
+                        <div className="flex items-center gap-1">
+                          SCORE
+                          <ArrowUpDown className="w-3 h-3" />
+                        </div>
+                      </TableHead>
+                      <TableHead className="font-semibold text-xs uppercase tracking-wide">EMAIL</TableHead>
+                      <TableHead className="font-semibold text-xs uppercase tracking-wide">CITY</TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs uppercase tracking-wide"
+                        onClick={() => handleSort("evaluation_date")}
+                      >
+                        <div className="flex items-center gap-1">
+                          DATE
+                          <ArrowUpDown className="w-3 h-3" />
+                        </div>
+                      </TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAndSortedEvaluations.map((evaluation, index) => (
+                      <TableRow 
+                        key={evaluation.id} 
+                        className={`
+                          border-b border-gray-100 dark:border-gray-800 
+                          hover:bg-gray-50 dark:hover:bg-gray-900 
+                          cursor-pointer transition-colors
+                          ${index % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50/50 dark:bg-gray-900/50'}
+                        `}
+                        onClick={() => handleRowClick(evaluation)}
+                      >
+                        <TableCell className="py-4 font-semibold text-sm">
+                          {evaluation.candidate_name || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {evaluation.vote ? (
+                            <Badge className={`${getVoteColor(evaluation.vote)} font-semibold`}>
+                              {evaluation.vote}/10
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {evaluation.email ? (
+                            <a 
+                              href={`mailto:${evaluation.email}`} 
+                              className="text-blue-600 hover:text-blue-800 hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {evaluation.email}
+                            </a>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {evaluation.city || "-"}
+                        </TableCell>
+                        <TableCell className="text-sm font-medium">
+                          {formatDate(evaluation.evaluation_date)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {filteredAndSortedEvaluations.map((evaluation) => (
+                  <Card 
+                    key={evaluation.id} 
+                    className="bg-gray-50 dark:bg-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleRowClick(evaluation)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-sm mb-1">
+                            {evaluation.candidate_name || "Unknown Candidate"}
+                          </h3>
+                          <div className="flex items-center gap-2 mb-2">
+                            {evaluation.vote ? (
+                              <Badge className={`${getVoteColor(evaluation.vote)} font-semibold text-xs`}>
+                                {evaluation.vote}/10
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-500 text-xs">No Score</span>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {formatDate(evaluation.evaluation_date)}
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        {evaluation.email && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-600 dark:text-gray-400">Email: </span>
+                            <a 
+                              href={`mailto:${evaluation.email}`} 
+                              className="text-blue-600 hover:text-blue-800 hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {evaluation.email}
+                            </a>
+                          </div>
+                        )}
+                        
+                        {evaluation.city && (
+                          <div className="text-sm">
+                            <span className="font-medium text-gray-600 dark:text-gray-400">City: </span>
+                            <span className="text-gray-700 dark:text-gray-300">{evaluation.city}</span>
+                          </div>
+                        )}
+                        
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                          Tap to view details
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

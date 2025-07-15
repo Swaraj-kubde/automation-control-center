@@ -37,10 +37,12 @@ const Dashboard = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50 dark:bg-gray-900">
         <AppSidebar activeView={activeView} setActiveView={setActiveView} />
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col min-w-0">
           <DashboardHeader />
-          <div className="flex-1 p-6">
-            {renderContent()}
+          <div className="flex-1 p-3 md:p-6 lg:p-8 overflow-hidden">
+            <div className="max-w-7xl mx-auto">
+              {renderContent()}
+            </div>
           </div>
         </main>
       </div>

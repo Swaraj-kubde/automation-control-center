@@ -69,28 +69,29 @@ export function InvoiceTracker() {
   };
 
   return (
-    <Card className="bg-white">
+    <Card className="bg-white dark:bg-gray-800">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">Smart Invoice Tracker</CardTitle>
+        <CardTitle className="text-lg md:text-xl font-semibold">Smart Invoice Tracker</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b">
-                <th className="text-left p-3 font-medium">Client</th>
-                <th className="text-left p-3 font-medium">Amount</th>
-                <th className="text-left p-3 font-medium">Due Date</th>
-                <th className="text-left p-3 font-medium">Status</th>
-                <th className="text-left p-3 font-medium">Actions</th>
+                <th className="text-left p-3 font-medium text-sm">Client</th>
+                <th className="text-left p-3 font-medium text-sm">Amount</th>
+                <th className="text-left p-3 font-medium text-sm">Due Date</th>
+                <th className="text-left p-3 font-medium text-sm">Status</th>
+                <th className="text-left p-3 font-medium text-sm">Actions</th>
               </tr>
             </thead>
             <tbody>
               {invoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b hover:bg-gray-50">
-                  <td className="p-3 font-medium">{invoice.client_name}</td>
-                  <td className="p-3">{formatCurrency(invoice.amount)}</td>
-                  <td className="p-3">
+                <tr key={invoice.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="p-3 font-medium text-sm">{invoice.client_name}</td>
+                  <td className="p-3 text-sm">{formatCurrency(invoice.amount)}</td>
+                  <td className="p-3 text-sm">
                     <span className={isOverdue(invoice.due_date) && invoice.status === "Unpaid" ? "text-red-600" : ""}>
                       {invoice.due_date}
                     </span>
@@ -98,8 +99,8 @@ export function InvoiceTracker() {
                   <td className="p-3">
                     <Badge className={
                       invoice.status === "Paid" 
-                        ? "bg-green-100 text-green-800" 
-                        : "bg-red-100 text-red-800"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" 
+                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
                     }>
                       {invoice.status}
                     </Badge>
@@ -120,7 +121,7 @@ export function InvoiceTracker() {
                             size="sm"
                             variant="outline"
                           >
-                            Send Follow-up
+                            Follow-up
                           </Button>
                         </>
                       )}
@@ -130,6 +131,59 @@ export function InvoiceTracker() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {invoices.map((invoice) => (
+            <Card key={invoice.id} className="bg-gray-50 dark:bg-gray-700">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-sm mb-1">{invoice.client_name}</h3>
+                    <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                      {formatCurrency(invoice.amount)}
+                    </p>
+                  </div>
+                  <Badge className={
+                    invoice.status === "Paid" 
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" 
+                      : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                  }>
+                    {invoice.status}
+                  </Badge>
+                </div>
+                
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  <span className="font-medium">Due: </span>
+                  <span className={isOverdue(invoice.due_date) && invoice.status === "Unpaid" ? "text-red-600" : ""}>
+                    {invoice.due_date}
+                  </span>
+                </div>
+
+                {invoice.status === "Unpaid" && (
+                  <div className="flex flex-col space-y-2">
+                    <Button 
+                      onClick={() => markAsPaid(invoice.id)}
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Mark as Paid
+                    </Button>
+                    <Button 
+                      onClick={() => sendFollowUp(invoice.id)}
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Send Follow-up
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </CardContent>
     </Card>

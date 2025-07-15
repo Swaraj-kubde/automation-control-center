@@ -73,11 +73,11 @@ export function LeadsOverview() {
   };
 
   return (
-    <Card className="bg-white">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-semibold">Leads Overview</CardTitle>
+    <Card className="bg-white dark:bg-gray-800">
+      <CardHeader className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0">
+        <CardTitle className="text-lg md:text-xl font-semibold">Leads Overview</CardTitle>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-full md:w-32">
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
           <SelectContent>
@@ -89,30 +89,35 @@ export function LeadsOverview() {
         </Select>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {filteredLeads.map((lead) => (
-            <div key={lead.id} className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-1">
-                  <h3 className="font-medium">{lead.name}</h3>
+            <div key={lead.id} className="flex flex-col md:flex-row md:items-center md:justify-between p-4 border rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+              <div className="flex-1 mb-3 md:mb-0">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <h3 className="font-medium text-sm md:text-base">{lead.name}</h3>
                   <Badge className={getStatusColor(lead.status)}>
                     {lead.status}
                   </Badge>
                   {lead.contacted && (
-                    <Badge variant="outline" className="text-green-600 border-green-600">
+                    <Badge variant="outline" className="text-green-600 border-green-600 dark:text-green-400 dark:border-green-400">
                       Contacted
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600">{lead.email}</p>
-                <p className="text-sm text-gray-600">{lead.phone}</p>
-                <p className="text-xs text-gray-500">Source: {lead.source} • {lead.created_at}</p>
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{lead.email}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{lead.phone}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Source: {lead.source} • {lead.created_at}
+                  </p>
+                </div>
               </div>
               {!lead.contacted && (
                 <Button 
                   onClick={() => markAsContacted(lead.id)}
                   size="sm"
                   variant="outline"
+                  className="w-full md:w-auto"
                 >
                   Mark Contacted
                 </Button>
