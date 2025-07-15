@@ -81,8 +81,20 @@ export function CVEvaluationSystem() {
       let bValue = b[sortField];
 
       if (sortField === "evaluation_date") {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
+        // Parse DD/MM/YYYY format for sorting
+        const parseDate = (dateString) => {
+          if (!dateString) return new Date(0);
+          if (dateString.includes('/')) {
+            const parts = dateString.split('/');
+            if (parts.length === 3) {
+              const [day, month, year] = parts;
+              return new Date(`${month}/${day}/${year}`);
+            }
+          }
+          return new Date(dateString);
+        };
+        aValue = parseDate(aValue);
+        bValue = parseDate(bValue);
       }
 
       if (sortField === "vote") {
@@ -107,7 +119,35 @@ export function CVEvaluationSystem() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString('en-GB', { 
+    
+    // Handle DD/MM/YYYY format from database
+    if (dateString.includes('/')) {
+      const parts = dateString.split('/');
+      if (parts.length === 3) {
+        // Convert DD/MM/YYYY to MM/DD/YYYY for JavaScript Date constructor
+        const [day, month, year] = parts;
+        const formattedDateString = `${month}/${day}/${year}`;
+        const date = new Date(formattedDateString);
+        
+        if (isNaN(date.getTime())) {
+          return "Invalid Date";
+        }
+        
+        return date.toLocaleDateString('en-GB', { 
+          day: '2-digit', 
+          month: 'short', 
+          year: 'numeric' 
+        });
+      }
+    }
+    
+    // Fallback for other date formats
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Invalid Date";
+    }
+    
+    return date.toLocaleDateString('en-GB', { 
       day: '2-digit', 
       month: 'short', 
       year: 'numeric' 
