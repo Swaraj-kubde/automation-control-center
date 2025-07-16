@@ -257,6 +257,24 @@ export type Database = {
           },
         ]
       }
+      profile_criteria: {
+        Row: {
+          criteria: string
+          id: number
+          updated_at: string | null
+        }
+        Insert: {
+          criteria?: string
+          id?: number
+          updated_at?: string | null
+        }
+        Update: {
+          criteria?: string
+          id?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

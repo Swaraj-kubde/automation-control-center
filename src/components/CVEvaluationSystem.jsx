@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, RefreshCw, Upload, ArrowUpDown } from "lucide-react";
+import { ExternalLink, RefreshCw, Upload, ArrowUpDown, Settings } from "lucide-react";
 import { useCVEvaluations } from "@/hooks/useCVEvaluations";
 import { useToast } from "@/hooks/use-toast";
 import { CVEvaluationFilters } from "./CVEvaluationFilters";
 import { CandidateDetailModal } from "./CandidateDetailModal";
+import { ProfileCriteriaModal } from "./ProfileCriteriaModal";
+import { useProfileCriteria } from "@/hooks/useProfileCriteria";
 
 export function CVEvaluationSystem() {
   const { data: cvEvaluations = [], isLoading, refetch } = useCVEvaluations();
@@ -19,6 +21,8 @@ export function CVEvaluationSystem() {
   const [considerationFilter, setConsiderationFilter] = useState("all");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false);
+  const { criteria, isLoading: isCriteriaLoading, isSaving, updateCriteria } = useProfileCriteria();
 
   const handleUploadClick = () => {
     window.open("https://aicoslyn.app.n8n.cloud/form/2a87705d-8ba1-41f1-80ef-85f364ce253e", "_blank");
@@ -172,10 +176,21 @@ export function CVEvaluationSystem() {
           <div className="text-sm text-gray-600 dark:text-gray-400">
             Submit a candidate's CV and job description to evaluate them using AI. The system will automatically score and store the results.
           </div>
-          <Button onClick={handleUploadClick} className="flex items-center gap-2 w-full md:w-auto">
-            <ExternalLink className="w-4 h-4" />
-            Upload CV / Resume
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button onClick={handleUploadClick} className="flex items-center gap-2 w-full sm:w-auto">
+              <ExternalLink className="w-4 h-4" />
+              Upload CV / Resume
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsCriteriaModalOpen(true)}
+              className="flex items-center gap-2 w-full sm:w-auto"
+              disabled={isCriteriaLoading}
+            >
+              <Settings className="w-4 h-4" />
+              Change Criterion
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -358,6 +373,14 @@ export function CVEvaluationSystem() {
         candidate={selectedCandidate}
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
+      />
+      
+      <ProfileCriteriaModal
+        isOpen={isCriteriaModalOpen}
+        onClose={() => setIsCriteriaModalOpen(false)}
+        criteria={criteria}
+        onSave={updateCriteria}
+        isSaving={isSaving}
       />
     </div>
   );
